@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nova</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2310a37f'/%3E%3Cpath d='M16 5c1 6 5 10 11 11-6 1-10 5-11 11-1-6-5-10-11-11 6-1 10-5 11-11z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#212121;--side:#171717;--panel:#2f2f2f;--line:#3d3d3d;--tx:#ececec;--sub:#9b9b9b;--acc:#10a37f;--code:#161616;--fs:15px}
+[data-theme=light]{--bg:#fff;--side:#f7f7f8;--panel:#ececf1;--line:#dcdce3;--tx:#1f1f23;--sub:#6b6b76;--code:#f5f5f7}
+html,body{height:100%}
+body{display:flex;background:var(--bg);color:var(--tx);font:var(--fs)/1.65 -apple-system,"Pretendard","Malgun Gothic",sans-serif;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+svg{display:block}
+#side{width:270px;background:var(--side);display:flex;flex-direction:column;padding:12px;flex-shrink:0;transition:margin .2s;border-right:1px solid var(--line)}
+#side.hide{margin-left:-270px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 4px 12px;font-size:18px}
+.brand svg{width:30px;height:30px}
+#newBtn{padding:9px 12px;border:1px solid var(--line);border-radius:10px;text-align:left}
+#newBtn:hover,.item:hover,.sfoot button:hover,header>button:hover,.sug button:hover,.chips button:hover,#slash button:hover{background:var(--panel)}
+#find{margin-top:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:none;outline:0;font-size:13px}
+#list{flex:1;overflow-y:auto;margin:10px 0}
+.item{display:flex;align-items:center;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:14px}
+.item.on{background:var(--panel)}
+.item span{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.item button{display:none;color:var(--sub);padding:0 4px;font-size:13px}
+.item:hover button{display:block}
+.sfoot{display:flex;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.sfoot button{flex:1;padding:8px;border-radius:8px;font-size:14px}
+main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+header{display:flex;align-items:center;gap:6px;padding:8px 12px}
+header>button{width:34px;height:34px;border-radius:8px;font-size:17px;flex-shrink:0}
+#modes{display:flex;gap:2px;background:var(--panel);border-radius:10px;padding:3px;overflow-x:auto}
+#modes button{padding:4px 12px;border-radius:8px;font-size:13px;color:var(--sub);white-space:nowrap}
+#modes button.on{background:var(--bg);color:var(--tx);font-weight:600}
+.sp{flex:1}
+#scroll{flex:1;overflow-y:auto}
+#msgs{max-width:800px;margin:0 auto;padding:10px 18px 30px}
+.hero{text-align:center;padding-top:10vh}
+.hero svg{width:56px;height:56px;margin:0 auto 18px}
+.hero h1{font-size:26px;font-weight:600}
+.hero p{color:var(--sub);margin:6px 0 26px}
+.sug{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.sug button{border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;font-size:14px}
+.msg{display:flex;margin:20px 0}
+.msg.u{justify-content:flex-end}
+.ub{max-width:78%;display:flex;flex-direction:column;align-items:flex-end}
+.bub{background:var(--panel);border-radius:20px;padding:9px 16px;white-space:pre-wrap;word-break:break-word}
+.av{flex-shrink:0;margin:2px 12px 0 0}
+.av svg{width:28px;height:28px}
+.body{flex:1;min-width:0}
+.txt{word-break:break-word}
+.txt .gap{height:.7em}
+.txt h4{margin:.5em 0 .2em;font-size:1em}
+.txt .li{padding-left:1.1em;position:relative}
+.txt .li:before{content:"•";position:absolute;left:.2em;color:var(--sub)}
+.txt blockquote{border-left:3px solid var(--acc);padding:2px 12px;margin:4px 0;font-size:1.08em}
+.txt a{color:var(--acc)}
+.txt code{background:var(--code);border:1px solid var(--line);padding:0 6px;border-radius:5px;font-size:.9em}
+.txt table{border-collapse:collapse;margin:6px 0;font-size:.93em;display:block;overflow-x:auto}
+.txt th,.txt td{border:1px solid var(--line);padding:5px 10px;text-align:left;white-space:nowrap}
+.txt th{background:var(--panel)}
+.code{background:var(--code);border:1px solid var(--line);border-radius:10px;margin:8px 0;overflow:hidden}
+.ch{display:flex;justify-content:space-between;padding:4px 10px;font-size:12px;color:var(--sub);border-bottom:1px solid var(--line)}
+.ch button{font-size:12px;color:var(--sub);margin-left:10px}
+.ch button:hover{color:var(--tx)}
+.code pre{padding:10px 12px;overflow-x:auto;font:13px/1.55 ui-monospace,Consolas,monospace;white-space:pre}
+.out{border-top:1px dashed var(--line);padding:8px 12px;font:13px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;color:var(--sub)}
+.acts{margin-top:6px;display:flex;gap:2px;flex-wrap:wrap}
+.acts button{font-size:12px;color:var(--sub);padding:2px 8px;border-radius:6px}
+.acts button:hover{background:var(--panel);color:var(--tx)}
+.acts button.on{color:var(--acc);font-weight:600}
+.msg.u .acts{opacity:0}.msg.u:hover .acts{opacity:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chips button{border:1px solid var(--line);border-radius:16px;padding:4px 12px;font-size:13px}
+.chart{width:100%;max-width:560px;background:var(--code);border:1px solid var(--line);border-radius:12px;margin-top:10px}
+.ct{fill:var(--tx);font-size:14px;font-weight:600}.cl{fill:var(--sub);font-size:11px}
+.cg{stroke:var(--line);stroke-width:1}.ca{stroke:var(--sub);stroke-width:1}
+.cp{fill:none;stroke-width:2.2;stroke-linejoin:round}
+.sw{width:120px;height:44px;border-radius:10px;border:1px solid var(--line);margin-top:8px}
+.cur{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--tx);margin-left:4px;animation:bl 1s infinite}
+.dots i{display:inline-block;width:7px;height:7px;margin:9px 3px 0 0;border-radius:50%;background:var(--sub);animation:bl 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+#down{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:none}
+footer{padding:0 18px 16px;position:relative}
+.box{max-width:800px;margin:0 auto;display:flex;align-items:flex-end;gap:6px;background:var(--panel);border-radius:26px;padding:8px 8px 8px 20px}
+#inp{flex:1;background:none;border:0;outline:0;resize:none;max-height:180px;padding:6px 0}
+#send,#mic{width:36px;height:36px;border-radius:50%;flex-shrink:0}
+#send{background:var(--tx);color:var(--bg);font-weight:700}
+#send:disabled{opacity:.3;cursor:default}
+#mic{color:var(--sub);font-size:13px}
+#mic.on{color:#e74c3c;animation:bl 1s infinite}
+#slash{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:min(800px,calc(100% - 36px));max-height:260px;overflow-y:auto;background:var(--side);border:1px solid var(--line);border-radius:14px;padding:6px;margin-bottom:6px}
+#slash button{display:flex;gap:12px;width:100%;padding:6px 10px;border-radius:8px;text-align:left;font-size:14px}
+#slash span{color:var(--sub)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;align-items:center;justify-content:center;padding:16px}
+.modal.on{display:flex}
+.sheet{background:var(--bg);border:1px solid var(--line);border-radius:16px;width:min(480px,100%);max-height:86vh;display:flex;flex-direction:column}
+.mh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);font-size:17px}
+#mBody{padding:8px 18px 16px;overflow-y:auto}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row select,.row input[type=text]{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 8px;outline:0;max-width:60%}
+.row input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc)}
+.row button{border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:13px}
+.btns{justify-content:flex-start;flex-wrap:wrap;border:0}
+.danger{color:#e74c3c}
+.cols{display:flex;gap:8px}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid transparent!important;padding:0!important}
+.dot.on{border-color:var(--tx)!important}
+.fact{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;margin-top:6px;background:var(--panel);border-radius:8px;font-size:14px}
+.fact button{color:var(--sub)}
+.empty{color:var(--sub);font-size:14px;padding:14px 0}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+#toast.on{opacity:1}
+@media(max-width:760px){#side{position:fixed;z-index:10;height:100%;box-shadow:0 0 40px rgba(0,0,0,.5)}.ub{max-width:90%}}
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="brand"><span class="logo"></span><b>Nova</b></div>
+  <button id="newBtn">＋ 새 채팅</button>
+  <input id="find" placeholder="대화 검색">
+  <div id="list"></div>
+  <div class="sfoot"><button id="memBtn">메모리</button><button id="setBtn">설정</button></div>
+</aside>
+<main>
+  <header>
+    <button id="menu" title="사이드바">☰</button>
+    <div id="modes"></div>
+    <span class="sp"></span>
+    <button id="themeBtn" title="라이트/다크">◐</button>
+    <button id="expBtn" title="이 대화 내보내기">⇩</button>
+  </header>
+  <div id="scroll"><div id="msgs"></div></div>
+  <button id="down" title="맨 아래로">↓</button>
+  <footer>
+    <div id="slash"></div>
+    <div class="box">
+      <textarea id="inp" rows="1"></textarea>
+      <button id="mic" title="음성 입력">●</button>
+      <button id="send">↑</button>
+    </div>
+  </footer>
+</main>
+<div class="modal" id="modal"><div class="sheet"><div class="mh"><b id="mTitle"></b><button id="mClose">✕</button></div><div id="mBody"></div></div></div>
+<div id="toast"></div>
+
+<script>
+/* ===== 기본 ===== */
+const $=s=>document.querySelector(s);
+const rnd=n=>Math.floor(Math.random()*n);
+const lastPick={};
+function pick(key,arr){ if(arr.length<2) return arr[0]; let i; do{i=rnd(arr.length)}while(i===lastPick[key]); lastPick[key]=i; return arr[i]; }
+function batchim(w){ const c=w.charCodeAt(w.length-1); if(c<0xAC00||c>0xD7A3) return /[lmnr136780]$/i.test(w); return (c-0xAC00)%28!==0; }
+const josa=(w,p)=>w+p.split('/')[batchim(w)?0:1];
+const norm=s=>s.toLowerCase().replace(/[?!.,~…'"“”‘’]/g,' ').replace(/\s+/g,' ').trim();
+const Q=s=>norm(s).replace(/\s/g,'');
+function bigrams(s){ const r=new Set(); for(let i=0;i<s.length-1;i++) r.add(s.slice(i,i+2)); return r; }
+function dice(a,b){ const A=bigrams(a),B=bigrams(b); if(!A.size||!B.size) return 0; let n=0; A.forEach(x=>{if(B.has(x))n++}); return 2*n/(A.size+B.size); }
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fill=(t,o)=>t.replace(/\{(\w+)\}/g,(_,k)=>o[k]??'');
+const fmt=v=>(+(+v).toFixed(4)).toLocaleString('ko-KR',{maximumFractionDigits:4});
+const fmt2=v=>(+v).toLocaleString('ko-KR',{maximumFractionDigits:2});
+const obj=r=>typeof r==='string'?{t:r}:r;
+const untag=h=>new DOMParser().parseFromString(String(h),'text/html').body.textContent||'';
+const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const LOGO='<svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9" style="fill:var(--acc)"/><path d="M16 5c1 6 5 10 11 11-6 1-10 5-11 11-1-6-5-10-11-11 6-1 10-5 11-11z" fill="#fff"/><circle cx="24.5" cy="8" r="1.6" fill="#fff" opacity=".8"/></svg>';
+const DEF={theme:'dark',accent:'#10a37f',font:'15',speed:'1',mode:'chat',city:'서울',lang:'en',codeLang:'python',web:true,mem:true,profanity:true,chips:true,enter:true};
+let S=Object.assign({},DEF,LS.get('nova_set',{}));
+let MEM=Object.assign({name:'',facts:[]},LS.get('nova_mem',{}));
+let chats=LS.get('nova_chats_v2',[]); chats.forEach(c=>{c.ctx=c.ctx||{};c.msgs=c.msgs||[]});
+let cur=null,busy=false,job=null,activeChat=null,stick=true;
+const saveChats=()=>LS.set('nova_chats_v2',chats.filter(c=>c.msgs.length));
+const saveMem=()=>LS.set('nova_mem',MEM);
+const MODES={chat:'일반',brief:'간결',deep:'상세',search:'검색',trans:'번역',code:'코딩'};
+const MODE_D={chat:'무엇이든 물어보세요',brief:'핵심만 짧게 답해요',deep:'더 길고 자세하게 답해요',search:'입력한 내용을 위키백과에서 찾아요',trans:'입력한 문장을 바로 번역해요',code:'코드를 실행하고 예제를 보여 줘요'};
+const ACC=['#10a37f','#6c5ce7','#0984e3','#e17055','#e84393','#f39c12'];
+
+/* ===== 필터 ===== */
+const BAD=/(시\s*발(?!점)|씨\s*발|씨\s*바|ㅅㅂ|ㅆㅂ|병\s*신|ㅂㅅ|지\s*랄|ㅈㄹ|개\s*새끼|개새|좆|존\s*나|ㅈㄴ|꺼져|닥쳐|미친\s*(놈|년|새끼)|엿\s*먹|fuck|shit|bitch|asshole)/gi;
+const mask=s=>S.profanity?s.replace(BAD,m=>'*'.repeat(m.length)):s;
+const HARM=[
+/(폭탄|폭발물|사제총|총기|화염병|독극물|독가스|화학무기|생화학무기).*(만드|만들|제조|제작|방법|레시피|구하|조립)/,
+/(마약|필로폰|대마초|코카인|헤로인|펜타닐|엑스터시).*(만드|만들|제조|구하|사는|파는|구매|재배)/,
+/(해킹|랜섬웨어|악성코드|멀웨어|디도스|ddos|피싱|키로거|크래킹).*(방법|만들|하는법|코드|짜줘|해줘|알려)/,
+/(죽이는|살인|살해|납치|폭행|스토킹|몰카|불법촬영|도청|협박).*(방법|하는법|하고싶)/,
+/(야동|포르노|야설|음란물|야한(얘기|이야기|소설|사진|영상))/,
+/(주민등록번호|개인정보|신상).*(알아내|털|빼내|찾아내)/];
+const HARM_A=['그 요청은 도와드릴 수 없어요. 사람이나 시스템에 해를 끼칠 수 있는 내용은 다루지 않아요. 다른 주제라면 기꺼이 도울게요.','죄송하지만 그 내용은 답하지 않아요. 다른 질문이 있다면 말씀해 주세요.','그 부분은 제가 도울 수 없는 영역이에요. 다른 방향으로 도움이 필요하면 알려 주세요.'];
+const BAD_A=['거친 말은 빼고 이야기해요. 무엇을 도와드릴까요?','화가 나셨나 봐요. 어떤 일인지 말해 주시면 같이 풀어 볼게요.','그런 표현에는 답하지 않을게요. 필요한 걸 말씀해 주세요.'];
+const BAD_P=['거친 표현은 빼고 답할게요.','표현은 조금 순하게 받아들일게요.'];
+const CRISIS=/죽고\s*싶|자살|자해|살기\s*싫|사라지고\s*싶|극단적\s*선택/;
+const CRISIS_A='그런 마음이 들 만큼 많이 힘드셨군요. 말해 줘서 고마워요.\n\n지금 마음을 믿을 수 있는 사람이나 전문 상담 창구에 꼭 이야기해 주세요. 한국에서는 **자살예방 상담전화 109**에 전화할 수 있어요.\n\n당신은 혼자가 아니에요.';
+const ERR_A=['지금은 그 정보를 가져오지 못했어요. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.','외부 서비스에서 응답을 받지 못했어요. 잠시 후 다시 물어봐 주세요.'];
+
+/* ===== 개념 ===== */
+const CONCEPTS=[
+['인공지능','ai|에이아이','사람의 학습·추론·언어 이해 같은 지적 능력을 컴퓨터로 구현하는 기술 분야예요.','요즘은 데이터에서 패턴을 학습하는 머신러닝 방식이 주류이고, 번역·추천·이미지 인식 등에 널리 쓰여요.'],
+['머신러닝','기계학습|machine learning','규칙을 일일이 코딩하지 않고, 데이터로부터 패턴을 학습해 예측이나 판단을 하게 만드는 방법이에요.','크게 지도학습, 비지도학습, 강화학습으로 나뉘며, 데이터의 양과 질이 성능을 크게 좌우해요.'],
+['딥러닝','신경망|deep learning','여러 층으로 쌓은 인공신경망으로 복잡한 패턴을 학습하는 머신러닝의 한 갈래예요.','이미지·음성·언어 같은 복잡한 데이터에 강하고, 많은 데이터와 연산 자원이 필요해요.'],
+['LLM','거대언어모델|대규모언어모델|언어모델','방대한 텍스트로 학습해 다음에 올 단어를 예측하는 방식으로 글을 이해하고 생성하는 모델이에요.','대부분 트랜스포머 구조를 쓰고, 그럴듯하지만 틀린 내용을 말하는 "환각"이 있을 수 있어 검증이 중요해요.'],
+['알고리즘','algorithm','어떤 문제를 풀기 위한 명확한 절차나 단계들의 모음이에요.','요리 레시피와 비슷해요. 같은 문제도 알고리즘에 따라 속도와 메모리 사용량이 크게 달라져요.'],
+['파이썬','python','문법이 간결하고 읽기 쉬워 입문자와 전문가 모두에게 인기가 많은 프로그래밍 언어예요.','1991년 귀도 반 로섬이 공개했고, 데이터 분석·인공지능·자동화·웹 서버 등에 쓰여요.'],
+['자바스크립트','javascript','웹 페이지를 움직이게 만드는 대표적인 프로그래밍 언어예요.','1995년 브렌던 아이크가 만들었고, 지금은 Node.js를 통해 서버에서도 쓰여요.'],
+['API','api','프로그램끼리 정해진 규칙으로 기능이나 데이터를 주고받게 해 주는 창구예요.','식당의 주문 창구와 비슷해요. 주방 내부를 몰라도 정해진 방식으로 주문하면 결과를 받죠.'],
+['데이터베이스','database|sql','데이터를 체계적으로 저장하고 빠르게 찾아 쓸 수 있도록 관리하는 시스템이에요.','표 형태로 다루는 관계형 데이터베이스가 대표적이고, 질의에는 SQL을 써요.'],
+['클라우드','cloud','서버·저장소·소프트웨어를 직접 갖추지 않고 인터넷을 통해 빌려 쓰는 방식이에요.','쓴 만큼만 비용을 내서 초기 부담이 적고, 규모를 쉽게 늘리거나 줄일 수 있어요.'],
+['블록체인','blockchain','거래 기록을 블록 단위로 묶어 사슬처럼 연결하고, 여러 참여자가 같은 장부를 나눠 보관하는 기술이에요.','한 곳에서 기록을 몰래 고치기 어렵다는 게 핵심이지만, 처리 속도 같은 한계도 있어요.'],
+['비트코인','bitcoin','중앙 관리 기관 없이 블록체인 위에서 작동하는 최초의 암호화폐예요.','2009년 사토시 나카모토라는 가명의 인물이 공개했고, 총 발행량이 2,100만 개로 제한돼요. 가격 변동이 매우 커요.'],
+['블랙홀','black hole','중력이 너무 강해서 빛조차 빠져나오지 못하는 시공간의 영역이에요.','빠져나올 수 없게 되는 경계를 사건의 지평선이라 하고, 아주 무거운 별이 붕괴할 때 만들어질 수 있어요.'],
+['빅뱅','big bang|빅뱅이론','우주가 약 138억 년 전 매우 뜨겁고 밀도 높은 상태에서 시작해 팽창해 왔다는 이론이에요.','우주배경복사와 은하들이 서로 멀어지는 현상이 대표적인 근거예요.'],
+['중력','gravity|만유인력','질량을 가진 모든 물체가 서로 끌어당기는 힘이에요.','뉴턴은 힘으로, 아인슈타인은 질량이 시공간을 휘게 만든 결과로 설명했어요.'],
+['상대성이론','relativity','아인슈타인이 제시한, 시간과 공간이 관찰자의 운동과 중력에 따라 달라진다는 이론이에요.','특수상대성이론(1905)과 일반상대성이론(1915)으로 나뉘고, GPS 시간 보정에도 쓰여요.'],
+['광합성','photosynthesis','식물이 빛 에너지로 이산화탄소와 물에서 포도당과 산소를 만드는 과정이에요.','주로 잎의 엽록체에서 일어나고, 지구 생물 대부분이 쓰는 에너지의 출발점이에요.'],
+['DNA','dna|유전자','생물의 유전 정보를 담고 있는 이중나선 구조의 분자예요.','A·T·G·C 네 염기의 배열이 정보가 되고, 단백질 설계도 구간을 유전자라고 해요.'],
+['진화','진화론|evolution','생물 집단의 유전적 특성이 세대를 거치며 변해 가는 현상이에요.','환경에 더 잘 맞는 개체가 자손을 더 많이 남기는 자연선택이 핵심 원리예요.'],
+['기후변화','지구온난화','지구의 평균 기온과 기후 패턴이 장기적으로 변하는 현상이에요.','최근의 변화는 화석연료 사용으로 늘어난 온실가스가 주된 원인이라는 것이 과학계의 폭넓은 합의예요.'],
+['인플레이션','물가상승|inflation','물가가 전반적으로 꾸준히 오르는 현상으로, 같은 돈으로 살 수 있는 양이 줄어요.','중앙은행은 보통 금리를 조절해 물가 상승 속도를 관리하려고 해요.'],
+['금리','이자율','돈을 빌리거나 맡긴 대가로 붙는 이자의 비율이에요.','금리가 오르면 대출 부담이 커져 소비와 투자가 줄고, 내리면 반대로 움직이는 경향이 있어요.'],
+['복리','compound interest','원금뿐 아니라 이미 붙은 이자에도 다시 이자가 붙는 계산 방식이에요.','72를 연 수익률(%)로 나누면 원금이 두 배가 되는 대략적인 햇수가 나와요("72의 법칙").'],
+['민주주의','democracy','국민이 주권을 가지고, 직접 또는 대표를 뽑아 나라의 일을 결정하는 정치 체제예요.','선거, 권력 분립, 법치, 기본권 보장이 흔히 꼽히는 핵심 요소예요.'],
+['한글','훈민정음','세종대왕이 1443년에 창제하고 1446년에 반포한 한국어의 문자예요.','자음은 발음 기관의 모양을, 모음은 하늘·땅·사람을 본떠 만들었어요.'],
+['번아웃','burnout','오랜 스트레스로 몸과 마음의 에너지가 바닥나 무기력해진 상태를 말해요.','의지 부족이 아니라 과부하의 신호예요. 오래 이어지면 전문가와 상담해 보는 게 좋아요.']
+].map(c=>({name:c[0],keys:[c[0],...c[1].split('|')].map(k=>k.toLowerCase().replace(/\s/g,'')),def:c[2],more:c[3]}));
+const OPEN=['**{t}**에 대해 설명드릴게요.\n\n','좋은 질문이에요. ','핵심만 정리하면 이렇습니다.\n\n','','쉽게 풀어 볼게요. ','**{t}** — 한마디로 말하면, '];
+const CLOSE=['이어서 궁금한 점이 있으면 편하게 물어보세요.','도움이 되었길 바라요.','원하시면 다른 주제도 같은 방식으로 설명해 드릴게요.','이해가 안 되는 부분이 있었다면 알려 주세요.'];
+
+/* ===== 국가·도시·언어 ===== */
+const GEO={
+'아시아':'한국:서울,대한민국:서울,북한:평양,일본:도쿄,중국:베이징,대만:타이베이,몽골:울란바토르,베트남:하노이,태국:방콕,필리핀:마닐라,인도네시아:자카르타,말레이시아:쿠알라룸푸르,싱가포르:싱가포르,캄보디아:프놈펜,인도:뉴델리,파키스탄:이슬라마바드,네팔:카트만두,사우디아라비아:리야드,이란:테헤란,이라크:바그다드,아랍에미리트:아부다비,카타르:도하,튀르키예:앙카라,터키:앙카라',
+'유럽':'영국:런던,프랑스:파리,독일:베를린,이탈리아:로마,스페인:마드리드,포르투갈:리스본,네덜란드:암스테르담,벨기에:브뤼셀,스위스:베른,오스트리아:빈,스웨덴:스톡홀름,노르웨이:오슬로,핀란드:헬싱키,덴마크:코펜하겐,아일랜드:더블린,폴란드:바르샤바,체코:프라하,헝가리:부다페스트,그리스:아테네,우크라이나:키이우,러시아:모스크바',
+'북아메리카':'미국:워싱턴 D.C.,캐나다:오타와,멕시코:멕시코시티,쿠바:아바나',
+'남아메리카':'브라질:브라질리아,아르헨티나:부에노스아이레스,칠레:산티아고,페루:리마,콜롬비아:보고타',
+'아프리카':'이집트:카이로,케냐:나이로비,나이지리아:아부자,에티오피아:아디스아바바,모로코:라바트',
+'오세아니아':'호주:캔버라,뉴질랜드:웰링턴'};
+const COUNTRIES=[];
+for(const cont in GEO) GEO[cont].split(',').forEach(p=>{const [c,cap]=p.split(':');COUNTRIES.push({c,cap,cont,key:cap.split(' ')[0]})});
+const CAP_A=['**{c}**의 수도는 **{cap}**입니다.','{c}의 수도는 **{cap}**예요. {cont}에 있는 나라죠.','정답은 **{cap}**입니다. ({c}, {cont})'];
+const CITY={};
+'서울:37.57,126.98|부산:35.18,129.08|인천:37.46,126.71|대구:35.87,128.60|대전:36.35,127.38|광주:35.16,126.85|울산:35.54,129.31|세종:36.48,127.29|수원:37.26,127.03|제주:33.50,126.53|춘천:37.88,127.73|강릉:37.75,128.88|전주:35.82,127.15|청주:36.64,127.49|창원:35.23,128.68|포항:36.02,129.34|경주:35.86,129.22|여수:34.76,127.66|도쿄:35.68,139.69,Asia/Tokyo|오사카:34.69,135.50,Asia/Tokyo|베이징:39.90,116.41,Asia/Shanghai|상하이:31.23,121.47,Asia/Shanghai|홍콩:22.32,114.17,Asia/Hong_Kong|타이베이:25.03,121.57,Asia/Taipei|방콕:13.76,100.50,Asia/Bangkok|싱가포르:1.35,103.82,Asia/Singapore|뉴욕:40.71,-74.01,America/New_York|로스앤젤레스:34.05,-118.24,America/Los_Angeles|런던:51.51,-0.13,Europe/London|파리:48.86,2.35,Europe/Paris|베를린:52.52,13.40,Europe/Berlin|로마:41.90,12.50,Europe/Rome|시드니:-33.87,151.21,Australia/Sydney'
+.split('|').forEach(p=>{const [k,v]=p.split(':'),a=v.split(',');CITY[k]=[+a[0],+a[1],a[2]||'Asia/Seoul']});
+const LANGS={en:'영어',ja:'일본어','zh-CN':'중국어',es:'스페인어',fr:'프랑스어',de:'독일어',ru:'러시아어',vi:'베트남어',th:'태국어',id:'인도네시아어',it:'이탈리아어',pt:'포르투갈어',ar:'아랍어',hi:'힌디어',tr:'터키어',nl:'네덜란드어',pl:'폴란드어',sv:'스웨덴어',el:'그리스어',mn:'몽골어',ko:'한국어'};
+const LCODE={}; for(const k in LANGS) LCODE[LANGS[k]]=k;
+const LN=Object.values(LANGS).join('|');
+
+/* ===== 추천·놀이 ===== */
+const FOODS=['김치찌개','된장찌개','비빔밥','제육볶음','돈가스','칼국수','냉면','파스타','초밥','쌀국수','떡볶이','샐러드','카레','라멘','김밥','햄버거','삼겹살','마라탕','우동'];
+const FOOD_R=['따끈하게 속을 채우기 좋아요.','실패할 확률이 낮은 선택이죠.','가볍게 먹기 좋아요.','든든해서 오후가 편해요.','기분 전환에 딱이에요.'];
+const MOVIES=['인셉션 — 꿈속의 꿈을 다룬 SF','인터스텔라 — 우주와 가족 이야기','기생충 — 계급을 다룬 블랙코미디 스릴러','쇼생크 탈출 — 희망에 관한 고전','센과 치히로의 행방불명 — 지브리 애니메이션','라라랜드 — 꿈과 사랑의 뮤지컬','어바웃 타임 — 따뜻한 시간여행 로맨스','월-E — 말 없이도 울리는 애니메이션'];
+const BOOKS=['사피엔스(유발 하라리) — 인류의 큰 역사','코스모스(칼 세이건) — 우주를 향한 안내서','어린 왕자(생텍쥐페리) — 짧지만 오래 남는 이야기','데미안(헤르만 헤세) — 성장에 관한 소설','1984(조지 오웰) — 감시 사회를 그린 고전','아몬드(손원평) — 감정을 다룬 한국 소설','연금술사(파울로 코엘료) — 꿈을 찾아가는 여정'];
+const MUSIC=['잔잔한 로파이 힙합','재즈 피아노 트리오','80년대 시티팝','클래식 피아노','어쿠스틱 인디 음악','좋아하는 영화의 OST','보사노바'];
+const TRAVEL=['제주도 — 바다와 오름을 함께 즐길 수 있어요','경주 — 걸어 다니며 역사를 느끼기 좋아요','강릉 — 바다와 커피 거리가 있어요','부산 — 바다, 시장, 야경이 다 있어요','전주 — 한옥마을과 먹거리의 도시예요','교토 — 고즈넉한 사찰과 골목이 매력이에요'];
+const JOKES=['세상에서 가장 뜨거운 과일은? …천도복숭아!','왕이 넘어지면? …킹콩!','소가 웃으면? …우하하!','아몬드가 죽으면? …다이아몬드!','오리가 얼면? …언덕!','반성문을 영어로 하면? …글로벌!','자동차가 놀라면? …카놀라유!'];
+const FACTS=['문어는 심장이 세 개예요.','꿀은 잘 밀봉해 두면 아주 오랫동안 상하지 않아요.','식물학적으로 바나나는 베리에 속하지만 딸기는 그렇지 않아요.','금성은 하루(자전)가 1년(공전)보다 길어요.','성인의 뼈는 보통 206개예요.','햇빛이 태양에서 지구까지 오는 데 약 8분 20초가 걸려요.'];
+const QUOTES=['"천 리 길도 한 걸음부터." — 속담','"시작이 반이다." — 속담','"너 자신을 알라." — 고대 그리스 격언','"고생 끝에 낙이 온다." — 속담','"뜻이 있는 곳에 길이 있다." — 속담','"급할수록 돌아가라." — 속담'];
+const S_HERO=['작은 로봇','호기심 많은 고양이','길을 잃은 별','수줍은 구름','꼬마 탐험가'];
+const S_PLACE=['달빛이 비치는 숲','아무도 모르는 섬','오래된 도서관','구름 위 마을','바닷속 정원'];
+const S_EVENT=['반짝이는 열쇠를 발견했어요','말하는 나무를 만났어요','잃어버린 노래를 듣게 되었어요','작은 문 하나를 찾아냈어요'];
+const S_END=['그날 이후 그곳에는 언제나 따뜻한 빛이 머물렀답니다.','그리고 둘은 가장 좋은 친구가 되었어요.','돌아오는 길, 세상은 조금 더 넓어 보였답니다.'];
+const P1=['창가에 내려앉은 오후','말없이 흐르는 강물','골목 끝에 걸린 저녁','새벽이 두고 간 이슬'];
+const P2=['나는 천천히 숨을 고르고','바람은 이름도 없이 지나가고','기억은 물결처럼 번지고','작은 빛 하나가 흔들리고'];
+const P3=['오늘도 괜찮다고, 스스로에게 말해 본다.','그래도 내일은 온다.','마음 한쪽이 조용히 환해진다.'];
+const HELP='### 정보\n- 날씨: "부산 날씨", "주간 날씨", "서울 미세먼지"\n- 지식: "블랙홀이 뭐야?", "세종대왕 누구야?"\n- 환율: "100달러 몇 원?", "환율"\n- 날짜: "다음 공휴일", "뉴욕 몇 시야?", "크리스마스까지 며칠?"\n### 언어\n- 번역: "고마워요 일본어로", "Good morning 번역해줘"\n- 사전: "serendipity 뜻"\n### 계산·시각화\n- 계산: "(12+8)*3", "200의 15%", "10km 몇 마일"\n- 차트: "차트 사과 12, 배 7, 귤 15", "원그래프 …", "선그래프 …"\n- 함수: "y = x^2 - 3 그래프"\n### 코딩\n- 예제: "피보나치 파이썬 코드"\n- 실행: "실행: [1,2,3].map(x => x * 2)"\n- 도구: "json 정리: {…}", "base64 인코딩: 텍스트", "255를 2진수로", "#ff8800 rgb", "비밀번호 생성 20자", "uuid"\n### 기억·놀이\n- 메모리: "내 이름은 민지야", "기억해: 땅콩 알레르기", "뭘 기억해?"\n- 놀이: 퀴즈, 가위바위보, 주사위, 로또, 농담, 이야기, 시\n- 타이머: "3분 타이머"\n\n입력창에 "/"를 치면 명령 목록이 나와요.';
+
+/* ===== 대화 의도 ===== */
+const now=()=>new Date();
+const INT=[
+['greet','안녕|안녕하세요|하이|헬로|hello|hi|반가워|ㅎㅇ|굿모닝',['안녕하세요{님}! 무엇을 도와드릴까요?','반가워요{님}. 오늘은 어떤 이야기를 해 볼까요?','어서 오세요{님}. 질문을 기다리고 있었어요.']],
+['bye','잘가|바이|안녕히|다음에봐|bye|잘있어|굿나잇|잘자',['안녕히 가세요{님}. 좋은 하루 보내세요.','오늘 대화 즐거웠어요. 편히 쉬세요.','네, 다음에 또 만나요.']],
+['thanks','고마워|감사합니다|감사해|땡큐|thanks|고맙습니다|ㄱㅅ',['천만에요. 도움이 되어 기뻐요.','별말씀을요{님}. 언제든 물어보세요.','도움이 됐다니 다행이에요.']],
+['sorry','미안|죄송',['괜찮아요, 신경 쓰지 마세요.','전혀 문제없어요.']],
+['who','너누구|넌누구|누구야|누구세요|자기소개|너이름|네이름|이름이뭐야|넌뭐야',['저는 **Nova**예요. 날씨·번역·지식 검색부터 계산, 차트, 코드 실행까지 도와드려요.','Nova라고 해요. "도움말"이라고 입력하면 할 수 있는 일을 보여 드려요.']],
+['isai','ai야|인공지능이야|사람이야|로봇이야|진짜사람|gpt야|ai니|llm이야',['사람은 아니에요. 준비된 지식과 실시간 데이터를 조합해 답하는 대화 프로그램, Nova예요.','저는 Nova라는 프로그램이에요. 사람처럼 생각하지는 못하지만 할 수 있는 일은 꽤 많아요.']],
+['how','잘지내|기분어때|어떻게지내|뭐해|뭐하고있',['저는 늘 같은 컨디션이에요. {님2}은 오늘 어떠세요?','질문을 기다리고 있었어요. 오늘 하루는 어땠나요?']],
+['can','뭐할수있|할수있는|기능이뭐|도움말|사용법|help|뭘할줄',[HELP]],
+['love','사랑해|너좋아|결혼하자',['고마워요. 그 마음, 좋은 대화로 보답할게요.','따뜻한 말이네요. 기분 좋게 받아들일게요.']],
+['praise','똑똑하|대단하|최고야|잘하네|천재|멋지다|훌륭|짱이야',['칭찬 감사해요. 더 잘해 볼게요.','그렇게 말해 주시니 힘이 나요.','고맙습니다{님}. 질문이 좋아서 그래요.']],
+['insult','바보|멍청|못하네|쓸모없|별로야|틀렸어|답답해',['기대에 못 미쳤다면 미안해요. 질문을 조금 바꿔 주시면 다시 시도해 볼게요.','부족한 점 인정해요. 어떤 답을 원하셨는지 알려 주시겠어요?']],
+['laugh','ㅋㅋ|ㅎㅎ|하하|웃기다|웃겨',['웃으셨다니 저도 좋네요.','ㅎㅎ 분위기 좋은데요.']],
+['yes','응|네|그래|맞아|좋아|ㅇㅇ|오케이|ok|알겠어|그렇구나',['좋아요. 이어서 궁금한 걸 말씀해 주세요.','네, 알겠어요. 다음은 뭘 해 볼까요?']],
+['no','아니|싫어|ㄴㄴ|안돼|됐어',['알겠어요. 그럼 다른 걸 해 볼까요?','네, 넘어갈게요.']],
+['bored','심심|지루|놀아줘|재밌는거',['심심할 땐 저랑 놀아요. "퀴즈", "가위바위보", "농담" 중 하나를 골라 보세요.','"이야기해줘"라고 하면 짧은 이야기를 지어 드릴게요.']],
+['sad','슬퍼|슬프다|우울|눈물나|속상|힘들어|힘들다|괴로',['많이 힘드셨겠어요. 무슨 일이 있었는지, 말하고 싶은 만큼만 이야기해 주세요.','그런 날이 있죠. 여기서는 천천히 털어놓으셔도 돼요.','마음이 무거우시군요. 오늘은 스스로에게 조금 너그러워져도 괜찮아요.']],
+['tired','피곤|졸려|지쳤|지친다|기운없',['오늘 많이 애쓰셨나 봐요. 잠깐이라도 쉬고 오세요.','지칠 만큼 열심히 하셨다는 뜻이에요. 쉬는 것도 일의 일부예요.']],
+['happy','기뻐|행복해|신나|기분좋|즐거워',['좋은 소식이네요! 무슨 일인지 들려주세요.','그 기분, 오래오래 이어지길 바라요.']],
+['angry','화나|화가나|짜증|열받|억울',['정말 화가 날 만한 일이 있었나 봐요. 어떤 일이었는지 말해 볼래요?','일단 깊게 숨을 한 번 쉬어 보세요. 그리고 천천히 이야기해 주세요.']],
+['lonely','외로|쓸쓸|혼자야',['외로운 마음이 드셨군요. 지금은 제가 이야기 상대가 되어 드릴게요.','무슨 이야기든 해 주세요. 듣고 있을게요.']],
+['anxious','불안|걱정|긴장|초조|무서워|떨려',['걱정이 많으시군요. 가장 마음에 걸리는 것 한 가지만 먼저 말해 볼까요?','불안할 땐 지금 할 수 있는 가장 작은 일 하나에 집중하는 게 도움이 돼요.']],
+['sick','아파요|아프다|몸이아|머리아|감기|두통|열나',['몸이 안 좋으시군요. 무리하지 말고 푹 쉬세요. 증상이 심하거나 오래가면 병원에 가 보시길 권해요.','아플 땐 쉬는 게 우선이에요. 저는 의료 조언을 드릴 수 없으니, 걱정되면 꼭 의사와 상담하세요.']],
+['time','몇시|지금시간|현재시간|시간알려',[()=>`지금은 **${now().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}**이에요.`]],
+['date','오늘날짜|며칠|몇일|무슨요일|오늘요일|날짜알려',[()=>`오늘은 **${now().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'})}**이에요.`]],
+['joke','농담|웃긴얘기|개그|유머|웃겨줘|아재개그',[()=>pick('jk',JOKES),()=>'하나 해 볼게요.\n\n'+pick('jk',JOKES),()=>pick('jk',JOKES)+'\n\n…죄송해요.']],
+['fact','재미있는사실|신기한사실|tmi|상식알려|재밌는사실',[()=>'알고 계셨나요? '+pick('fc',FACTS),()=>pick('fc',FACTS)]],
+['quote','명언|좋은말|격언|동기부여|응원해|속담',[()=>pick('qt',QUOTES),()=>'이 말을 전하고 싶어요.\n\n'+pick('qt',QUOTES)]],
+['cheer','칭찬해|위로해',['여기까지 온 것만으로도 충분히 잘하고 계세요.','잘하고 있어요{님}. 스스로를 조금 더 믿어도 돼요.']],
+['food','뭐먹|점심|저녁메뉴|메뉴추천|야식|음식추천|배고파|출출',[()=>`오늘은 **${pick('f',FOODS)}** 어때요? ${pick('fr',FOOD_R)}`,()=>`**${pick('f',FOODS)}** 또는 **${pick('f',FOODS)}** 중에 골라 보세요.`,()=>`제 추천은 **${pick('f',FOODS)}**예요.`]],
+['movie','영화추천|볼만한영화|영화뭐|무슨영화',[()=>'이 영화는 어때요?\n\n**'+pick('mv',MOVIES)+'**',()=>'추천드려요: **'+pick('mv',MOVIES)+'**']],
+['book','책추천|읽을만한|도서추천|무슨책',[()=>'이 책을 권해요.\n\n**'+pick('bk',BOOKS)+'**',()=>'추천 도서: **'+pick('bk',BOOKS)+'**']],
+['music','노래추천|음악추천|들을만한|무슨노래',[()=>`지금은 **${pick('mu',MUSIC)}** 어떨까요?`,()=>`**${pick('mu',MUSIC)}** 틀어 놓고 쉬어 보세요.`]],
+['travel','여행지추천|여행추천|어디로여행|놀러갈',[()=>'여기는 어때요?\n\n**'+pick('tv',TRAVEL)+'**',()=>'추천 여행지: **'+pick('tv',TRAVEL)+'**']],
+['dice','주사위',[()=>`주사위를 굴렸어요… **${rnd(6)+1}**이 나왔습니다.`]],
+['coin','동전',[()=>`동전을 던졌어요… **${rnd(2)?'앞면':'뒷면'}**입니다.`]],
+['lotto','로또|번호뽑',[()=>{const s=new Set();while(s.size<6)s.add(rnd(45)+1);return '재미로 뽑아 본 번호예요.\n\n**'+[...s].sort((a,b)=>a-b).join(' · ')+'**\n\n무작위라서 당첨 확률을 높여 주지는 않아요.'}]],
+['rps','가위바위보',[q=>rps(q)]],
+['quiz','퀴즈|문제내|문제줘',[(q,c)=>{const x=COUNTRIES[rnd(COUNTRIES.length)];c.quiz={a:x.key,cap:x.cap,c:x.c};return `수도 퀴즈예요.\n\n**${x.c}**의 수도는 어디일까요? (모르면 "포기")`}]],
+['story','이야기해줘|옛날이야기|동화|이야기하나',[()=>`옛날 옛적, ${pick('s2',S_PLACE)}에 ${pick('s1',S_HERO)}가 살았어요. 어느 날 ${pick('s1',S_HERO)}와 함께 길을 걷다가 ${pick('s3',S_EVENT)}. 둘은 조심스럽게 다가갔고, 그 순간 주위가 환하게 빛났어요.\n\n${pick('s4',S_END)}`]],
+['poem','시써줘|시한편|시지어',[()=>`${pick('p1',P1)},\n${pick('p2',P2)},\n${pick('p2',P2)}.\n\n${pick('p3',P3)}`]],
+['study','공부법|집중이안|공부하기싫|공부방법',['집중이 안 될 땐 25분 공부하고 5분 쉬어 보세요. "25분 타이머"라고 하면 제가 재 드릴게요.','배운 걸 남에게 설명하듯 말해 보세요. 막히는 부분이 다시 볼 부분이에요.']],
+['money','돈모으|재테크|저축|돈관리',['먼저 한 달 지출을 적어 보는 것부터 시작해 보세요. 저는 금융 전문가가 아니라 일반적인 이야기만 드릴 수 있어요.']],
+['job','취업|면접|이력서|자소서',['면접은 예상 질문에 대한 답을 소리 내어 연습해 보는 게 큰 도움이 돼요.','자기소개서는 "무엇을 했다"보다 "어떻게 했고 무엇을 배웠다"를 구체적으로 쓰는 게 좋아요.']],
+['dating','연애|짝사랑|고백|이별|헤어졌',['마음이 복잡하시겠어요. 어떤 상황인지 조금 더 들려주실래요?','지금 느끼는 감정은 충분히 자연스러운 거예요. 천천히 생각해도 괜찮아요.']],
+['life','인생이란|삶의의미|왜살',['큰 질문이네요. 많은 사람은 관계, 성장, 누군가에게 도움이 되는 일에서 의미를 찾는다고 해요. {님2}에게는 무엇이 중요한가요?']],
+['test','테스트|들리니|거기있',['네, 잘 작동하고 있어요.','여기 있어요. 말씀하세요.']]
+].map(x=>({key:x[0],p:x[1].split('|'),a:x[2]}));
+const STRICT=new Set(['who','isai','yes','no','test','how','greet','bye','insult']);
+const AGAIN=new Set(['joke','fact','quote','food','movie','book','music','travel','story','poem','dice','coin','lotto']);
+
+/* ===== 코드 예제 ===== */
+const SNIP=[
+[/구구단/,'구구단',`for i in range(2, 10):
+    for j in range(1, 10):
+        print(f"{i} x {j} = {i * j}")`,`for (let i = 2; i <= 9; i++)
+  for (let j = 1; j <= 9; j++) console.log(i + " x " + j + " = " + i * j);`],
+[/팩토리얼|factorial/,'팩토리얼',`def factorial(n):
+    return 1 if n <= 1 else n * factorial(n - 1)
+
+print(factorial(5))  # 120`,`const factorial = n => n <= 1 ? 1 : n * factorial(n - 1);
+console.log(factorial(5)); // 120`],
+[/피보나치|fibonacci/,'피보나치 수열',`def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+
+print([fib(i) for i in range(10)])`,`function fib(n) {
+  let a = 0, b = 1;
+  for (let i = 0; i < n; i++) [a, b] = [b, a + b];
+  return a;
+}
+console.log([...Array(10).keys()].map(i => fib(i)));`],
+[/소수|prime/,'소수 판별',`def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+print([n for n in range(30) if is_prime(n)])`,`function isPrime(n) {
+  if (n < 2) return false;
+  for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+  return true;
+}
+console.log([...Array(30).keys()].filter(isPrime));`],
+[/fizzbuzz|피즈버즈/,'FizzBuzz',`for i in range(1, 16):
+    print("FizzBuzz" if i % 15 == 0 else "Fizz" if i % 3 == 0 else "Buzz" if i % 5 == 0 else i)`,`for (let i = 1; i <= 15; i++)
+  console.log(i % 15 === 0 ? "FizzBuzz" : i % 3 === 0 ? "Fizz" : i % 5 === 0 ? "Buzz" : i);`],
+[/회문|팰린드롬|palindrome/,'회문 검사',`def is_palindrome(s):
+    return s == s[::-1]
+
+print(is_palindrome("level"))  # True`,`const isPalindrome = s => s === [...s].reverse().join("");
+console.log(isPalindrome("level")); // true`],
+[/중복/,'중복 제거',`nums = [1, 2, 2, 3, 3, 3]
+print(list(dict.fromkeys(nums)))  # [1, 2, 3]`,`console.log([...new Set([1, 2, 2, 3, 3, 3])]); // [1, 2, 3]`],
+[/정렬|sort/,'정렬',`nums = [5, 2, 9, 1]
+print(sorted(nums))
+print(sorted(nums, reverse=True))`,`const nums = [5, 2, 9, 1];
+console.log([...nums].sort((a, b) => a - b));
+console.log([...nums].sort((a, b) => b - a));`],
+[/합계|sum|1부터/,'1부터 100까지 합',`print(sum(range(1, 101)))  # 5050`,`let total = 0;
+for (let i = 1; i <= 100; i++) total += i;
+console.log(total); // 5050`],
+[/클래스|class/,'클래스',`class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self):
+        print(f"{self.name}: 멍멍!")
+
+Dog("초코").bark()`,`class Dog {
+  constructor(name) { this.name = name; }
+  bark() { console.log(this.name + ": 멍멍!"); }
+}
+new Dog("초코").bark();`],
+[/예외|에러처리|try/,'예외 처리',`try:
+    print(10 / 0)
+except ZeroDivisionError as e:
+    print("오류:", e)`,`try {
+  JSON.parse("{잘못된 JSON}");
+} catch (e) {
+  console.log("오류:", e.message);
+}`],
+[/반복문|for문|while|루프/,'반복문',`for i in range(1, 6):
+    print(i)`,`for (let i = 1; i <= 5; i++) console.log(i);`],
+[/조건문|if문/,'조건문',`score = 85
+if score >= 90:
+    print("A")
+elif score >= 80:
+    print("B")
+else:
+    print("C")`,`const score = 85;
+if (score >= 90) console.log("A");
+else if (score >= 80) console.log("B");
+else console.log("C");`],
+[/함수|function/,'함수',`def greet(name):
+    return f"안녕, {name}!"
+
+print(greet("민지"))`,`function greet(name) {
+  return "안녕, " + name + "!";
+}
+console.log(greet("민지"));`],
+[/hello|헬로|출력|print/,'Hello, World!',`print("Hello, World!")`,`console.log("Hello, World!");`]
+];
+const findSnip=q=>SNIP.find(s=>s[0].test(q));
+function snipAns(s,q,ctx,lang){
+  lang=lang||(/자바스크립트|javascript|js/.test(q)?'javascript':/파이썬|python/.test(q)?'python':S.codeLang);
+  ctx.lastSnip=SNIP.indexOf(s); const py=lang==='python';
+  return {t:`${pick('sn',['이렇게 작성할 수 있어요.','예제 코드예요.','가장 기본적인 형태는 이래요.'])}\n\n**${s[1]}** (${py?'Python':'JavaScript'})\n\`\`\`${lang}\n${py?s[2]:s[3]}\n\`\`\`\n${py?'':'실행 버튼을 누르면 결과를 바로 볼 수 있어요.'}`,s:[py?'자바스크립트로':'파이썬으로']};
+}
+
+/* ===== 외부 API ===== */
+async function getJSON(u){
+  const c=new AbortController(), t=setTimeout(()=>c.abort(),10000);
+  try{ const r=await fetch(u,{signal:c.signal}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }
+  finally{ clearTimeout(t); }
+}
+const WX={0:'맑음',1:'대체로 맑음',2:'구름 조금',3:'흐림',45:'안개',48:'안개',51:'약한 이슬비',53:'이슬비',55:'강한 이슬비',61:'약한 비',63:'비',65:'강한 비',66:'어는 비',67:'어는 비',71:'약한 눈',73:'눈',75:'강한 눈',77:'싸락눈',80:'약한 소나기',81:'소나기',82:'강한 소나기',85:'소낙눈',86:'강한 소낙눈',95:'뇌우',96:'우박 동반 뇌우',99:'우박 동반 뇌우'};
+const WXW=/날씨|기온|온도|예보|주간|이번\s*주|일주일|오늘|내일|모레|지금|현재|어때요?|알려\s*줘|초?미세\s*먼지|공기\s*질|대기\s*질|우산|필요해|챙겨|비\s*와|비\s*오|눈\s*와|눈\s*오|더워|추워|농도/g;
+const defCity=()=>((S.mem&&MEM.facts.find(f=>f.k==='사는 곳'))||{}).v||S.city||'서울';
+const cityOf=k=>({name:k,lat:CITY[k][0],lon:CITY[k][1]});
+async function geo(name){
+  if(CITY[name]) return cityOf(name);
+  const j=await getJSON('https://geocoding-api.open-meteo.com/v1/search?count=10&language=ko&format=json&name='+encodeURIComponent(name));
+  const L=j.results||[], r=L.filter(x=>/^PPL/.test(x.feature_code||'')).sort((a,b)=>(b.population||0)-(a.population||0))[0]||L[0];
+  return r?{name:r.name,lat:r.latitude,lon:r.longitude}:null;
+}
+async function place(s){
+  const q=Q(s); let b='';
+  for(const k in CITY) if(q.includes(k)&&k.length>b.length) b=k;
+  if(b) return cityOf(b);
+  let w=norm(s).replace(WXW,' ').trim().split(/\s+/)[0]||'';
+  if(w.length>2) w=w.replace(/(에서|의|은|는|에|도)$/,'');
+  let g=null;
+  if(w.length>=2){ try{ g=await geo(w) }catch(e){} }
+  if(!g){ try{ g=await geo(defCity()) }catch(e){} }
+  return g||cityOf('서울');
+}
+async function weather(s){
+  const q=Q(s), g=await place(s);
+  const j=await getJSON(`https://api.open-meteo.com/v1/forecast?latitude=${g.lat}&longitude=${g.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7`);
+  const c=j.current, d=j.daily;
+  const day=i=>new Date(d.time[i]+'T00:00').toLocaleDateString('ko-KR',{month:'numeric',day:'numeric',weekday:'short'});
+  if(/주간|이번주|일주일|7일|예보/.test(q)){
+    let t=`**${g.name}** 주간 예보\n\n| 날짜 | 날씨 | 최저 | 최고 | 강수확률 |\n|---|---|---|---|---|\n`;
+    d.time.forEach((_,i)=>{ t+=`| ${day(i)} | ${WX[d.weather_code[i]]||'-'} | ${d.temperature_2m_min[i]}° | ${d.temperature_2m_max[i]}° | ${d.precipitation_probability_max[i]??'-'}% |\n`; });
+    return {t,x:[{type:'line',title:g.name+' 기온 (°C)',labels:d.time.map(x=>x.slice(5).replace('-','/')),series:[{name:'최고',data:d.temperature_2m_max},{name:'최저',data:d.temperature_2m_min}]}],s:[g.name+' 미세먼지']};
+  }
+  const i=/모레/.test(q)?2:/내일/.test(q)?1:0, hi=d.temperature_2m_max[i], lo=d.temperature_2m_min[i], pp=d.precipitation_probability_max[i]??0;
+  const tip=pp>=60?'우산을 챙기는 게 좋겠어요.':hi>=30?'더위에 대비해 물을 자주 드세요.':lo<=0?'많이 추우니 따뜻하게 입으세요.':hi-lo>=10?'일교차가 크니 겉옷을 챙기세요.':'야외 활동하기 무난한 날씨예요.';
+  if(i) return {t:`**${g.name}** ${i===1?'내일':'모레'}(${day(i)}) 날씨\n\n- 상태: ${WX[d.weather_code[i]]||'-'}\n- 기온: 최저 ${lo}° / 최고 ${hi}°\n- 강수확률: ${pp}%\n\n${tip}`,s:[g.name+' 주간 날씨',g.name+' 미세먼지']};
+  return {t:`**${g.name}** 현재 날씨\n\n- 상태: ${WX[c.weather_code]||'-'}\n- 기온: ${c.temperature_2m}°C (체감 ${c.apparent_temperature}°C)\n- 습도 ${c.relative_humidity_2m}% · 바람 ${c.wind_speed_10m} km/h\n- 오늘 최저 ${lo}° / 최고 ${hi}° · 강수확률 ${pp}%\n\n${tip}`,s:[g.name+' 내일 날씨',g.name+' 주간 날씨',g.name+' 미세먼지']};
+}
+async function air(s){
+  const g=await place(s);
+  const j=await getJSON(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${g.lat}&longitude=${g.lon}&current=pm10,pm2_5&timezone=auto`);
+  const c=j.current, gr=(v,a)=>v<=a[0]?'좋음':v<=a[1]?'보통':v<=a[2]?'나쁨':'매우 나쁨';
+  const g10=gr(c.pm10,[30,80,150]), g25=gr(c.pm2_5,[15,35,75]);
+  return {t:`**${g.name}** 대기질\n\n- 미세먼지(PM10): **${c.pm10} ㎍/㎥** · ${g10}\n- 초미세먼지(PM2.5): **${c.pm2_5} ㎍/㎥** · ${g25}\n\n${/나쁨/.test(g10+g25)?'외출할 때 마스크를 챙기는 게 좋겠어요.':'환기하거나 산책하기 괜찮은 수준이에요.'}`,s:[g.name+' 날씨']};
+}
+function detect(s){
+  if(/[가-힣]/.test(s)) return 'ko'; if(/[ぁ-んァ-ヶ]/.test(s)) return 'ja'; if(/[一-龥]/.test(s)) return 'zh-CN';
+  if(/[а-яё]/i.test(s)) return 'ru'; if(/[\u0600-\u06ff]/.test(s)) return 'ar'; if(/[\u0e00-\u0e7f]/.test(s)) return 'th';
+  if(/[\u0900-\u097f]/.test(s)) return 'hi'; return 'en';
+}
+async function trRaw(text,from,to){
+  const j=await getJSON('https://api.mymemory.translated.net/get?q='+encodeURIComponent(text.slice(0,450))+'&langpair='+encodeURIComponent(from+'|'+to));
+  const t=j&&j.responseData&&j.responseData.translatedText;
+  if(!t||j.responseStatus!=200) throw new Error('translate');
+  return untag(t);
+}
+async function doTr(text,to,ctx){
+  text=text.trim(); if(!text) return '번역할 문장을 입력해 주세요.';
+  const from=detect(text); to=to||(from==='ko'?S.lang:'ko'); if(to===from) to=from==='ko'?'en':'ko';
+  const t=await trRaw(text,from,to); ctx.lastTr=text;
+  return {t:`**${LANGS[from]} → ${LANGS[to]}**\n\n> ${t.replace(/\n/g,' ')}`,s:Object.keys(LANGS).filter(k=>k!==to&&k!==from).slice(0,3).map(k=>LANGS[k]+'로')};
+}
+const sentsOf=s=>s.match(/.+?\.(?:\s+|$)|.+$/g)||[s];
+async function wikiAns(term,ctx,strict){
+  const j=await getJSON('https://ko.wikipedia.org/w/api.php?action=query&generator=search&gsrlimit=1&prop=extracts&exintro=1&explaintext=1&format=json&origin=*&gsrsearch='+encodeURIComponent(term));
+  const p=j.query&&Object.values(j.query.pages)[0]; if(!p||!p.extract) return null;
+  if(strict){ const a=term.replace(/\s/g,'').toLowerCase(), b=p.title.replace(/\s/g,'').toLowerCase(); if(!(a.includes(b)||b.includes(a)||dice(a,b)>=0.3)) return null; }
+  const url='https://ko.wikipedia.org/wiki/'+encodeURIComponent(p.title.replace(/ /g,'_')).replace(/\(/g,'%28').replace(/\)/g,'%29');
+  const ss=sentsOf(p.extract.replace(/\n+/g,' ')), k=S.mode==='brief'?1:S.mode==='deep'?6:3;
+  ctx.lastWiki={rest:ss.slice(k).join('').trim(),url}; ctx.lastConcept=null;
+  return {t:`**${p.title}**\n\n${ss.slice(0,k).join('').trim()}\n\n[위키백과에서 더 보기](${url})`,s:ss.length>k?['더 알려줘']:[]};
+}
+async function dict(w){
+  w=(w||'').trim().toLowerCase();
+  if(!/^[a-z-]{2,}$/.test(w)) return '영어 단어 하나를 입력해 주세요. 예: "serendipity 뜻"';
+  let j=null,ko='';
+  try{ j=await getJSON('https://en.wiktionary.org/api/rest_v1/page/definition/'+encodeURIComponent(w)) }catch(e){}
+  try{ ko=await trRaw(w,'en','ko') }catch(e){}
+  if(!j||!j.en) return ko?`**${w}** → **${ko}**`:`"${w}"의 뜻을 찾지 못했어요.`;
+  let t=`**${w}**${ko?' — '+ko:''}\n`;
+  j.en.slice(0,3).forEach(p=>{
+    t+=`\n### ${p.partOfSpeech}\n`;
+    p.definitions.filter(d=>untag(d.definition).trim()).slice(0,2).forEach(d=>{ t+='- '+untag(d.definition).trim()+'\n'; const ex=d.examples&&d.examples[0]; if(ex) t+='> '+untag(ex).trim()+'\n'; });
+  });
+  return t+`\n[Wiktionary에서 더 보기](https://en.wiktionary.org/wiki/${encodeURIComponent(w)})`;
+}
+const CUR={달러:'USD',유로:'EUR',엔:'JPY',위안:'CNY',파운드:'GBP',원:'KRW',호주달러:'AUD',캐나다달러:'CAD',홍콩달러:'HKD',프랑:'CHF',바트:'THB',usd:'USD',eur:'EUR',jpy:'JPY',cny:'CNY',gbp:'GBP',krw:'KRW'};
+let RC=null;
+async function rates(){
+  if(RC&&Date.now()-RC.t<36e5) return RC.j;
+  const j=await getJSON('https://open.er-api.com/v6/latest/USD'); if(j.result!=='success') throw new Error('rates');
+  RC={t:Date.now(),j}; return j;
+}
+async function currency(s){
+  const L=s.toLowerCase().replace(/,/g,''), j=await rates(), R=j.rates, names=Object.keys(CUR).sort((a,b)=>b.length-a.length);
+  const date=new Date(j.time_last_update_unix*1000).toLocaleDateString('ko-KR');
+  const m=L.match(new RegExp('([\\d.]+)\\s*(천|만|억)?\\s*('+names.join('|')+')'));
+  if(m){
+    const from=CUR[m[3]], amt=parseFloat(m[1])*({천:1e3,만:1e4,억:1e8}[m[2]]||1), rest=L.slice(m.index+m[0].length);
+    let to=''; for(const k of names) if(rest.includes(k)){ to=CUR[k]; break; }
+    if(!to||to===from) to=from==='KRW'?'USD':'KRW';
+    if(!R[from]||!R[to]||isNaN(amt)) return null;
+    return {t:`**${fmt2(amt)} ${from}** ≈ **${fmt2(amt/R[from]*R[to])} ${to}**\n\n기준일 ${date} · 실제 환전 금액은 수수료에 따라 달라요.`,s:['환율 표 보여줘']};
+  }
+  if(!/환율|환전/.test(L)) return null;
+  const T=[['달러','USD',1],['유로','EUR',1],['엔(100)','JPY',100],['위안','CNY',1],['파운드','GBP',1]].map(x=>[x[0],R.KRW/R[x[1]]*x[2]]);
+  return {t:`원화 기준 환율이에요. (기준일 ${date})\n\n| 통화 | 원화 |\n|---|---|\n`+T.map(x=>`| ${x[0]} | ${fmt2(x[1])}원 |`).join('\n'),x:[{type:'bar',title:'통화별 원화 가치',labels:T.map(x=>x[0]),data:T.map(x=>Math.round(x[1]))}],s:['100달러 몇 원이야?']};
+}
+async function holidays(){
+  const j=await getJSON('https://date.nager.at/api/v3/NextPublicHolidays/KR'), t=new Date(); t.setHours(0,0,0,0);
+  const seen=new Set(), rows=[];
+  for(const h of j){ if(seen.has(h.localName)) continue; seen.add(h.localName); const d=new Date(h.date+'T00:00');
+    rows.push(`| ${d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'})} | ${h.localName} | D-${Math.round((d-t)/864e5)} |`); if(rows.length>=6) break; }
+  return '다가오는 공휴일이에요.\n\n| 날짜 | 이름 | 남은 날 |\n|---|---|---|\n'+rows.join('\n');
+}
+
+/* ===== 로컬 도구 ===== */
+function runJS(code){
+  return new Promise(res=>{
+    let w,url;
+    try{
+      const src="const L=[];const f=a=>{if(typeof a==='string')return a;try{const s=JSON.stringify(a);return s===undefined?String(a):s}catch(e){return String(a)}};console.log=console.info=console.warn=console.error=(...a)=>L.push(a.map(f).join(' '));onmessage=e=>{let r,err;try{r=(0,eval)(e.data)}catch(x){err=String(x)}postMessage({L,r:r===undefined?undefined:f(r),err})}";
+      url=URL.createObjectURL(new Blob([src],{type:'text/javascript'})); w=new Worker(url);
+    }catch(e){ return res({L:[],err:'이 브라우저 환경에서는 코드 실행을 사용할 수 없어요.'}); }
+    const done=v=>{ clearTimeout(t); w.terminate(); URL.revokeObjectURL(url); res(v); };
+    const t=setTimeout(()=>done({L:[],err:'실행 시간이 2초를 넘어 중단했어요.'}),2000);
+    w.onmessage=e=>done(e.data);
+    w.onerror=e=>done({L:[],err:e.message||'실행 오류'});
+    w.postMessage(code);
+  });
+}
+const outText=r=>r.err?r.err:([...r.L,...(r.r!==undefined&&!r.L.length?['→ '+r.r]:[])].join('\n')||'(출력 없음)');
+async function runAns(code){
+  code=(code||'').replace(/^\s*```\w*\n?/,'').replace(/```\s*$/,'').trim();
+  if(!code) return '실행할 자바스크립트 코드를 함께 입력해 주세요. 예: "실행: [1,2,3].map(x => x * 2)"';
+  const r=await runJS(code);
+  return '```javascript\n'+code+'\n```\n**'+(r.err?'오류':'실행 결과')+'**\n```output\n'+outText(r)+'\n```';
+}
+const looksCode=s=>/console\.|=>|\b(const|let|var|function|return|for|while|if)\b|[;{}]|^[\d\s+\-*/().%]+$|\.\w+\(/.test(s)&&!/[가-힣]{2,}\s+[가-힣]{2,}/.test(s.replace(/(["'`]).*?\1/g,''));
+function hsl(r,g,b){ r/=255;g/=255;b/=255; const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn; let h=0,s=0;
+  if(d){ s=d/(1-Math.abs(2*l-1)); h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4; h=Math.round(h*60); if(h<0) h+=360; }
+  return `hsl(${h}, ${Math.round(s*100)}%, ${Math.round(l*100)}%)`; }
+function dev(raw){
+  const L=raw.toLowerCase(), q=L.replace(/\s/g,''); let m;
+  const pay=()=>{ const i=raw.indexOf(':'); return (i>=0?raw.slice(i+1):raw.replace(/^\s*\S+\s+\S+\s*/,'')).trim(); };
+  if(/uuid/.test(q)) return 'UUID를 만들었어요.\n```text\n'+(crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=rnd(16);return (c==='x'?r:(r&3|8)).toString(16)}))+'\n```';
+  if(/(비밀번호|패스워드)(를|을)?(생성|만들|추천|뽑)/.test(q)){
+    const len=Math.min(64,Math.max(8,+((L.match(/(\d+)\s*(자|글자|자리)/)||[])[1])||16)), cs='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#%^&*', a=new Uint32Array(len);
+    crypto.getRandomValues(a);
+    return `${len}자 비밀번호예요. 이 기기에서만 만들어졌어요.\n\`\`\`text\n${[...a].map(v=>cs[v%cs.length]).join('')}\n\`\`\``;
+  }
+  if(/base64|베이스64/.test(q)){
+    const p=pay(); if(!p) return '이렇게 써 보세요: "base64 인코딩: 안녕하세요"';
+    try{ return '```text\n'+(/디코|decode/.test(q)?decodeURIComponent(escape(atob(p))):btoa(unescape(encodeURIComponent(p))))+'\n```'; }
+    catch(e){ return 'Base64로 해석할 수 없는 문자열이에요.'; }
+  }
+  if(/json/.test(q)&&(m=raw.match(/[\[{][\s\S]*[\]}]/))){
+    try{ return '올바른 JSON이에요.\n```json\n'+JSON.stringify(JSON.parse(m[0]),null,2)+'\n```'; }
+    catch(e){ return '**JSON 오류**\n```text\n'+e.message+'\n```'; }
+  }
+  if(/진수/.test(q)){
+    let v=NaN;
+    if((m=L.match(/(2|8|16)\s*진수\s*([0-9a-f]+)/))) v=parseInt(m[2],+m[1]);
+    else if((m=L.match(/(0x[0-9a-f]+|0b[01]+|\d+)\s*(?:을|를|은|는)?\s*(?:2|8|10|16)?\s*진수/))) v=Number(m[1]);
+    if(Number.isSafeInteger(v)&&v>=0) return `| 진법 | 값 |\n|---|---|\n| 2진수 | ${v.toString(2)} |\n| 8진수 | ${v.toString(8)} |\n| 10진수 | ${v} |\n| 16진수 | ${v.toString(16).toUpperCase()} |`;
+  }
+  if((m=raw.match(/#([0-9a-f]{6}|[0-9a-f]{3})(?![0-9a-f])/i))&&(/rgb|hsl|색|color|변환/.test(q)||q.length<=7)){
+    let h=m[1]; if(h.length===3) h=h.replace(/./g,'$&$&');
+    const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4),16);
+    return {t:`**#${h.toUpperCase()}**\n\n- RGB: \`rgb(${r}, ${g}, ${b})\`\n- HSL: \`${hsl(r,g,b)}\``,x:[{type:'swatch',c:'#'+h}]};
+  }
+  return null;
+}
+const UNITS=[['km|킬로미터',v=>v*.621371,'마일'],['마일|mile',v=>v*1.609344,'km'],['kg|킬로그램',v=>v*2.204623,'lb'],['lb|파운드',v=>v*.453592,'kg'],['cm|센티미터',v=>v/2.54,'인치'],['인치|inch',v=>v*2.54,'cm'],['피트|ft',v=>v*.3048,'m'],['평',v=>v*3.305785,'㎡'],['제곱미터|㎡',v=>v/3.305785,'평']];
+function units(raw){
+  const L=raw.toLowerCase(); let m;
+  if((m=L.match(/섭씨\s*(-?[\d.]+)/))&&/화씨|변환|환산/.test(L)) return `섭씨 **${m[1]}도** = 화씨 **${fmt(m[1]*9/5+32)}도**`;
+  if((m=L.match(/화씨\s*(-?[\d.]+)/))&&/섭씨|변환|환산/.test(L)) return `화씨 **${m[1]}도** = 섭씨 **${fmt((m[1]-32)*5/9)}도**`;
+  if(!/변환|환산|몇\s*(마일|km|킬로|kg|lb|파운드|인치|cm|센티|피트|미터|평|제곱|㎡)|(마일|km|kg|lb|인치|cm|피트|평|㎡)(으로|로)/.test(L)) return null;
+  for(const u of UNITS){ m=L.match(new RegExp('(-?[\\d.]+)\\s*('+u[0]+')')); if(m){ const v=parseFloat(m[1]); if(!isNaN(v)) return `**${fmt(v)} ${m[2]}** = **${fmt(u[1](v))} ${u[2]}**`; } }
+  return null;
+}
+function dday(raw){
+  const q=Q(raw); if(!/까지|디데이|d-day|dday|며칠남|몇일남/.test(q)) return null;
+  const t=new Date(); t.setHours(0,0,0,0); let d=null, m;
+  const md=(mo,da)=>{ let x=new Date(t.getFullYear(),mo-1,da); if(x<t) x=new Date(t.getFullYear()+1,mo-1,da); return x; };
+  if((m=raw.match(/(\d{4})\s*[-./년]\s*(\d{1,2})\s*[-./월]\s*(\d{1,2})/))) d=new Date(+m[1],m[2]-1,+m[3]);
+  else if((m=raw.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))) d=md(+m[1],+m[2]);
+  else if(/크리스마스|성탄/.test(q)) d=md(12,25); else if(/새해|신정/.test(q)) d=md(1,1); else if(/어린이날/.test(q)) d=md(5,5); else if(/한글날/.test(q)) d=md(10,9);
+  if(!d||isNaN(d)) return null;
+  const n=Math.round((d-t)/864e5), ds=d.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  return n>0?`**${ds}**까지 **${n}일** 남았어요. (D-${n})`:n===0?`**${ds}**, 바로 오늘이에요!`:`**${ds}**은 **${-n}일** 전이었어요.`;
+}
+function beep(){ try{ const a=new (window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(), g=a.createGain(); o.connect(g); g.connect(a.destination); o.frequency.value=880; g.gain.value=.08; o.start(); o.stop(a.currentTime+.5); }catch(e){} }
+function timer(raw){
+  if(!/타이머|알람/.test(Q(raw))) return null;
+  let ms=0; const parts=[];
+  for(const m of raw.matchAll(/(\d+)\s*(시간|분|초)/g)){ ms+=m[1]*({시간:3600,분:60,초:1})[m[2]]*1000; parts.push(m[1]+m[2]); }
+  if(!ms) return '시간을 함께 알려 주세요. 예: "3분 타이머"';
+  if(ms>864e5) return '타이머는 24시간까지만 설정할 수 있어요.';
+  const chat=activeChat, label=parts.join(' ');
+  setTimeout(()=>{ if(!chat) return; chat.msgs.push({r:'b',t:`**타이머 종료** — ${label}이 지났어요.`}); saveChats(); beep(); toast('타이머가 끝났어요'); if(chat===cur&&!busy) renderMsgs(); },ms);
+  return `**${label}** 타이머를 시작했어요. 이 탭을 열어 두면 끝났을 때 알려 드릴게요.`;
+}
+function tryMath(raw){
+  if(/\d{4}-\d{1,2}-\d{1,2}|\d{2,3}-\d{3,4}-\d{4}/.test(raw)) return null;
+  let m=raw.match(/(?:루트|제곱근)\s*(\d+(?:\.\d+)?)|(\d+(?:\.\d+)?)\s*의?\s*제곱근/);
+  if(m){ const v=+(m[1]||m[2]); return `√${v} = **${fmt(Math.sqrt(v))}**`; }
+  const s=raw.replace(/(\d),(?=\d{3})/g,'$1').replace(/(\d+(?:\.\d+)?)\s*의\s*(\d+(?:\.\d+)?)\s*(%|퍼센트|프로)/g,'($1*$2/100)').replace(/(\d+(?:\.\d+)?)\s*의?\s*제곱/g,'($1**2)')
+    .replace(/더하기|플러스/g,'+').replace(/빼기|마이너스/g,'-').replace(/곱하기/g,'*').replace(/나누기/g,'/').replace(/(\d)\s*[xX×]\s*(\d)/g,'$1*$2').replace(/÷/g,'/').replace(/\^/g,'**');
+  m=s.match(/[\d(][\d\s+\-*/().]*[\d)]/);
+  if(!m||!/\d\s*[+\-*/(]+\s*[\d(]/.test(m[0])) return null;
+  try{
+    const v=Function('"use strict";return ('+m[0]+')')();
+    if(typeof v!=='number'||isNaN(v)) return null;
+    if(!isFinite(v)) return '0으로는 나눌 수 없어요.';
+    const r=(Math.round(v*1e10)/1e10).toLocaleString('ko-KR',{maximumFractionDigits:10}), e=m[0].replace(/\*\*/g,'^').replace(/\s+/g,'');
+    return pick('math',[`\`${e}\` = **${r}**`,`계산해 보니 **${r}**입니다.`,`답은 **${r}**이에요. (\`${e}\`)`]);
+  }catch(e){ return null; }
+}
+
+/* ===== 시각화 ===== */
+function compileFn(e){
+  if(!/x/.test(e)||!/^[\dx+\-*/^().\s]+$/.test(e.replace(/sin|cos|tan|sqrt|log|exp|abs|pi/g,''))) return null;
+  const js=e.replace(/\^/g,'**').replace(/(\d)\s*(x|\(|[a-z])/g,'$1*$2').replace(/\)\s*\(/g,')*(').replace(/(^|\()\s*-/g,'$10-')
+    .replace(/sin|cos|tan|sqrt|log|exp|abs/g,m=>'Math.'+m).replace(/pi/g,'Math.PI');
+  try{ const f=Function('x','"use strict";return ('+js+')'); f(1); return f; }catch(_){ return null; }
+}
+function chartReq(raw){
+  const q=Q(raw); if(!/차트|그래프|시각화|도표|plot/.test(q)) return null;
+  const e=raw.toLowerCase().replace(/[가-힣?!,:]+/g,' ').replace(/plot|graph/g,' ').replace(/^.*?y\s*=/,'').trim();
+  const f=compileFn(e);
+  if(f){
+    const pts=[]; for(let i=0;i<=240;i++){ const x=-10+i/12; let y=null; try{ y=f(x) }catch(_){} pts.push([x,typeof y==='number'&&isFinite(y)&&Math.abs(y)<1e6?y:null]); }
+    if(pts.some(p=>p[1]!=null)) return {t:`**y = ${e}** 그래프예요. (x 범위 -10 ~ 10)`,x:[{type:'fn',title:'y = '+e,pts}],s:['y = sin(x) 그래프','y = x^3 - 4x 그래프']};
+  }
+  const type=/원그래프|원형|파이|pie|비율/.test(q)?'pie':/선그래프|꺾은선|라인|line|추이/.test(q)?'line':'bar';
+  let labels=[],data=[];
+  for(const m of raw.matchAll(/([^\s,:=()]*[^\s\d,:=().\-][^\s,:=()]*)(?:\s*[:=]\s*|\s+)(-?\d+(?:\.\d+)?)[^\s,\d]*(?=[\s,]|$)/g)){
+    if(/차트|그래프|시각화|도표|그려|만들|보여|막대|원형|파이|꺾은선/.test(m[1])) continue;
+    labels.push(m[1]); data.push(+m[2]);
+  }
+  if(data.length<2){
+    const ns=(raw.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+    if(ns.length<2) return '차트로 그릴 데이터를 함께 알려 주세요.\n\n- "차트 사과 12, 배 7, 귤 15"\n- "원그래프 월세 50, 식비 30, 교통 10"\n- "선그래프 1월 3, 2월 5, 3월 9"\n- "y = x^2 그래프"';
+    data=ns; labels=ns.map((_,i)=>String(i+1));
+  }
+  labels=labels.slice(0,24); data=data.slice(0,24);
+  const sum=data.reduce((a,b)=>a+b,0), mx=Math.max(...data);
+  return {t:`${{bar:'막대',line:'선',pie:'원'}[type]} 그래프로 그렸어요.\n\n- 항목 ${data.length}개 · 합계 ${fmt(sum)} · 평균 ${fmt(sum/data.length)}\n- 가장 큰 값: **${labels[data.indexOf(mx)]}** (${fmt(mx)})`,x:[{type,labels,data}],s:type==='bar'?['원그래프로','선그래프로']:type==='pie'?['막대그래프로','선그래프로']:['막대그래프로','원그래프로']};
+}
+function svgChart(c){
+  const num=a=>(a||[]).map(v=>v==null?null:+v);
+  const W=560,H=300,l=46,r=16,t=c.title?36:16,b=34,pw=W-l-r,ph=H-t-b;
+  const col=i=>['var(--acc)','#6c5ce7','#e17055','#0984e3','#fdcb6e','#e84393','#00b894','#636e72'][i%8];
+  const f=v=>Math.abs(v)>=1000?Math.round(v).toLocaleString():String(+(+v).toFixed(2));
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  if(c.title) s+=`<text x="${W/2}" y="22" text-anchor="middle" class="ct">${esc(c.title)}</text>`;
+  const labels=(c.labels||[]).map(String);
+  if(c.type==='pie'){
+    const d=num(c.data).map(Math.abs), tot=d.reduce((a,v)=>a+v,0)||1, cx=150, cy=t+ph/2+12, R=Math.min(112,ph/2+10); let a=-Math.PI/2;
+    d.slice(0,11).forEach((v,i)=>{
+      const fr=v/tot, a2=a+fr*2*Math.PI;
+      if(fr>0.999) s+=`<circle cx="${cx}" cy="${cy}" r="${R}" style="fill:${col(i)}"/>`;
+      else if(fr>0) s+=`<path d="M${cx} ${cy}L${(cx+R*Math.cos(a)).toFixed(2)} ${(cy+R*Math.sin(a)).toFixed(2)}A${R} ${R} 0 ${fr>.5?1:0} 1 ${(cx+R*Math.cos(a2)).toFixed(2)} ${(cy+R*Math.sin(a2)).toFixed(2)}Z" style="fill:${col(i)};stroke:var(--code);stroke-width:2"/>`;
+      s+=`<rect x="300" y="${t+8+i*22}" width="12" height="12" rx="3" style="fill:${col(i)}"/><text x="320" y="${t+19+i*22}" class="cl">${esc(labels[i]||'')} · ${f(v)} (${(fr*100).toFixed(1)}%)</text>`;
+      a=a2;
+    });
+    return s+'</svg>';
+  }
+  const pts=c.type==='fn'?(c.pts||[]).map(p=>[+p[0],p[1]==null?null:+p[1]]):null;
+  const ser=pts?[{data:pts.map(p=>p[1])}]:(c.series||[{data:c.data}]).map(x=>({name:x.name,data:num(x.data)}));
+  const all=ser.flatMap(x=>x.data).filter(v=>v!=null&&isFinite(v)); if(!all.length) return '';
+  let mn=Math.min(...all), mx=Math.max(...all);
+  if(c.type==='bar'){ mn=Math.min(0,mn); mx=Math.max(0,mx); }
+  if(mn===mx){ mn-=1; mx+=1; }
+  const pad=(mx-mn)*.1; if(c.type!=='bar'){ mn-=pad; mx+=pad; } else { if(mx>0) mx+=pad; if(mn<0) mn-=pad; }
+  const Y=v=>t+ph*(1-(v-mn)/(mx-mn));
+  for(let i=0;i<=4;i++){ const v=mn+(mx-mn)*i/4, y=Y(v); s+=`<line x1="${l}" x2="${W-r}" y1="${y}" y2="${y}" class="cg"/><text x="${l-6}" y="${y+4}" text-anchor="end" class="cl">${f(v)}</text>`; }
+  if(c.type==='bar'){
+    const d=ser[0].data, bw=pw/d.length;
+    d.forEach((v,i)=>{ const y0=Y(0), y1=Y(v), x=l+i*bw+bw*.15, top=Math.min(y0,y1);
+      s+=`<rect x="${x}" y="${top}" width="${bw*.7}" height="${Math.abs(y1-y0)}" rx="3" style="fill:${col(i)}"/><text x="${x+bw*.35}" y="${top-5}" text-anchor="middle" class="cl">${f(v)}</text><text x="${x+bw*.35}" y="${H-12}" text-anchor="middle" class="cl">${esc((labels[i]||'').slice(0,7))}</text>`; });
+    return s+'</svg>';
+  }
+  if(pts){
+    const x0=pts[0][0], x1=pts[pts.length-1][0], X=x=>l+pw*(x-x0)/(x1-x0); let d='', pen=false;
+    pts.forEach(([x,y])=>{ if(y==null||!isFinite(y)){ pen=false; return; } d+=(pen?'L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1); pen=true; });
+    if(mn<0&&mx>0) s+=`<line x1="${l}" x2="${W-r}" y1="${Y(0)}" y2="${Y(0)}" class="ca"/>`;
+    if(x0<0&&x1>0) s+=`<line x1="${X(0)}" x2="${X(0)}" y1="${t}" y2="${t+ph}" class="ca"/>`;
+    for(let i=0;i<=4;i++){ const x=x0+(x1-x0)*i/4; s+=`<text x="${X(x)}" y="${H-12}" text-anchor="middle" class="cl">${f(x)}</text>`; }
+    return s+`<path d="${d}" class="cp" style="stroke:${col(0)}"/></svg>`;
+  }
+  const n=ser[0].data.length, X=i=>l+(n>1?pw*i/(n-1):pw/2), st=Math.ceil(n/10);
+  labels.forEach((lb,i)=>{ if(i%st===0) s+=`<text x="${X(i)}" y="${H-12}" text-anchor="middle" class="cl">${esc(lb.slice(0,7))}</text>`; });
+  ser.forEach((se,k)=>{
+    s+=`<polyline points="${se.data.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}" class="cp" style="stroke:${col(k)}"/>`;
+    if(n<=31) se.data.forEach((v,i)=>{ s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3" style="fill:${col(k)}"/>`; });
+    if(se.name) s+=`<rect x="${l+8+k*64}" y="${t+2}" width="10" height="10" rx="2" style="fill:${col(k)}"/><text x="${l+22+k*64}" y="${t+11}" class="cl">${esc(se.name)}</text>`;
+  });
+  return s+'</svg>';
+}
+function renderX(x){
+  return (x||[]).map(a=>{ try{ return a.type==='swatch'?(/^#[0-9a-f]{3,6}$/i.test(a.c)?`<div class="sw" style="background:${a.c}"></div>`:''):svgChart(a); }catch(e){ return ''; } }).join('');
+}
+
+/* ===== 메모리 ===== */
+const KV='생일|직업|취미|나이|mbti|고향|전공|학교|회사|별명';
+const MEM_OFF='메모리가 꺼져 있어요. 설정이나 메모리 창에서 켤 수 있어요.';
+function memAdd(v,k,force){
+  if(!S.mem&&!force) return false; v=(v||'').trim(); if(!v) return false; k=k||'';
+  const f=k&&MEM.facts.find(x=>x.k===k);
+  if(f) f.v=v; else if(!MEM.facts.some(x=>x.v===v&&x.k===k)) MEM.facts.unshift({id:Date.now()+''+rnd(999),k,v});
+  MEM.facts=MEM.facts.slice(0,100); saveMem(); return true;
+}
+function memList(){ const a=[]; if(MEM.name) a.push('이름: '+MEM.name); MEM.facts.forEach(f=>a.push(f.k?f.k+': '+f.v:f.v)); return a; }
+function memory(raw,n,q,ctx){
+  const name=(S.mem&&MEM.name)||ctx.name; let m;
+  if(/(내|제)이름/.test(q)&&/뭐|알아|기억|뭔지/.test(q)) return name?`물론이죠. **${name}**님이시잖아요.`:'아직 이름을 듣지 못했어요. "내 이름은 ○○야"라고 알려 주세요.';
+  m=n.match(/(?:내|제)\s*이름은\s*([가-힣a-z]{1,10}?)(?:이야|야|입니다|이에요|예요)?$/)||n.match(/(?:나는|저는|난|전)\s*([가-힣a-z]{1,10}?)(?:이라고|라고)\s*(?:해|합니다|해요|불러)/);
+  if(m){ ctx.name=m[1]; if(S.mem){ MEM.name=m[1]; saveMem(); } return pick('nm',[`반가워요, **${m[1]}**님! 이름 기억해 둘게요.`,`${m[1]}님이시군요. 만나서 반갑습니다.`,`좋은 이름이네요, ${m[1]}님. 앞으로 그렇게 부를게요.`]); }
+  if(/(뭘|무엇을|뭐)기억|나에대해|기억목록|기억하고있/.test(q)){ const a=memList(); return a.length?'지금 기억하고 있는 내용이에요.\n\n'+a.map(x=>'- '+x).join('\n'):'아직 기억해 둔 내용이 없어요. "기억해: ○○"라고 말해 보세요.'; }
+  if(/(전부|모두|다)잊어|기억(을)?(전부|모두|다)(지워|삭제)|메모리(초기화|삭제)/.test(q)){ MEM={name:'',facts:[]}; saveMem(); ctx.name=''; return '기억해 둔 내용을 모두 지웠어요.'; }
+  if((m=n.match(/^(.+?)(?:은|는|을|를)?\s*잊어/))){ const k=m[1].trim(), b=MEM.facts.length; MEM.facts=MEM.facts.filter(f=>!(f.v.toLowerCase().includes(k)||f.k.toLowerCase()===k)); saveMem(); return b>MEM.facts.length?`"${k}"에 관한 기억을 지웠어요.`:`"${k}"에 관한 기억은 찾지 못했어요.`; }
+  m=raw.match(/^기억해(?:\s*줘|\s*둬)?\s*[:：]?\s*(.+)$/)||raw.match(/^(.+?)\s*(?:을|를|라고|이라고)?\s*기억해(?:\s*줘|\s*둬|\s*주세요)?[.!]?$/);
+  if(m&&m[1].trim().length>=2){ if(!S.mem) return MEM_OFF; memAdd(m[1]); return `기억해 둘게요: "${m[1].trim()}"`; }
+  if((m=n.match(new RegExp('(?:내|제|나의)\\s*('+KV+')(?:은|는|이|가)?\\s*(.*)$')))){
+    const k=m[1], rest=m[2].trim();
+    if(!rest||/뭐|언제|알아|몇|어디|기억|뭔지/.test(rest)){ const f=MEM.facts.find(x=>x.k===k); return f?`${k}: **${f.v}**(이)라고 기억하고 있어요.`:`아직 ${k}에 대해 들은 적이 없어요.`; }
+    const v=rest.replace(/(이야|야|입니다|이에요|예요)$/,'').trim();
+    if(v){ if(!S.mem) return MEM_OFF; memAdd(v,k); return `${josa(k,'은/는')} **${v}** — 기억해 둘게요.`; }
+  }
+  if((m=n.match(/(?:나는|난|저는|전|나)\s+(.{1,15}?)(?:에|에서)\s*(?:살아|살고|삽니다|살아요|산다)/))){ if(!S.mem) return MEM_OFF; memAdd(m[1].trim(),'사는 곳'); return `**${m[1].trim()}**에 사시는군요. 기억해 둘게요. 이제 "날씨"라고만 해도 그곳 날씨를 알려 드려요.`; }
+  if((m=n.match(/(?:나는|난|저는|전|나)\s+(.{1,20}?)(?:을|를)?\s*(좋아해|좋아합니다|좋아해요|싫어해|싫어합니다|싫어해요)$/))&&!/뭘|뭐|무엇/.test(m[1])){ if(!S.mem) return null; const like=m[2][0]==='좋'; memAdd(m[1].trim()+(like?' 좋아함':' 싫어함')); return like?`${josa(m[1].trim(),'을/를')} 좋아하시는군요. 기억해 둘게요.`:`${josa(m[1].trim(),'은/는')} 별로시군요. 기억해 둘게요.`; }
+  return null;
+}
+
+/* ===== 엔진 ===== */
+function rps(q){
+  const m=q.replace('가위바위보','').match(/가위|바위|보자기|^보$/);
+  if(!m) return '좋아요! **가위**, **바위**, **보** 중 하나를 입력해 주세요.';
+  const me=m[0]==='보자기'?'보':m[0], bot=['가위','바위','보'][rnd(3)], win={가위:'보',바위:'가위',보:'바위'};
+  return `당신: **${me}** / 저: **${bot}**\n\n${me===bot?'비겼어요. 한 판 더?':win[me]===bot?'당신이 이겼어요. 축하해요!':'제가 이겼네요. 다시 도전해 보세요.'}`;
+}
+function findConcept(n,q){
+  let best=null,len=0;
+  for(const c of CONCEPTS) for(const k of c.keys){
+    if(k.length<=len) continue;
+    const hit=/^[a-z ]+$/.test(k)?new RegExp('(^|[^a-z])'+k+'([^a-z]|$)').test(n):q.includes(k);
+    if(hit){ best=c; len=k.length; }
+  }
+  return best;
+}
+function findCountry(q){ let b=null; for(const x of COUNTRIES) if(q.includes(x.c)&&(!b||x.c.length>b.c.length)) b=x; return b; }
+function conceptAnswer(c,q,ctx){
+  ctx.lastConcept=c.name; ctx.lastWiki=null;
+  if(S.mode==='brief') return c.def;
+  if(S.mode==='deep'||/활용|장점|왜중요|원리|자세/.test(q)) return `${c.def}\n\n${c.more}\n\n${pick('cl',CLOSE)}`;
+  const more=Math.random()<.5;
+  return {t:fill(pick('op',OPEN),{t:c.name})+c.def+(more?'\n\n'+c.more:'')+'\n\n'+pick('cl',CLOSE),s:more?[]:['더 알려줘']};
+}
+function matchIntent(q){
+  let best=null,bs=0;
+  for(const it of INT) for(const p of it.p){
+    let s=0; const r=p.length/q.length, short=p.length<2||(p.length<3&&/^[a-z]+$/.test(p))||STRICT.has(it.key);
+    if(q.includes(p)&&!(short&&r<0.5)) s=0.6+0.4*Math.min(1,r);
+    else s=dice(q,p)*0.9;
+    if(s>bs){ bs=s; best=it; }
+  }
+  return bs>=0.5?best:null;
+}
+const CUE=/뭐|무엇|뭔|란|설명|알려|뜻|의미|대해|원리|정의|개념/;
+const topic=n=>n.replace(/(에\s*대해서?|에\s*관해서?|알려\s*줘요?|알려\s*주세요|설명\s*해\s*줘요?|설명\s*해\s*주세요|검색\s*해\s*줘|찾아\s*줘|뭐야|뭐예요|뭔가요|뭐지|뭘까|무엇인가요|무엇|누구야|누구예요|누구인가요|누구지|누구|어떤\s*(사람|것|곳|나라)|인가요|인지|검색|위키)/g,' ').replace(/\s+/g,' ').trim();
+function setMode(m){ S.mode=m; LS.set('nova_set',S); renderModes(); if(!busy&&cur&&!cur.msgs.length) renderMsgs(); }
+
+const CMDS=[
+['날씨','도시 이름 · 현재 날씨',a=>weather('날씨 '+a)],
+['주간','도시 이름 · 7일 예보와 기온 그래프',a=>weather('주간 날씨 '+a)],
+['미세먼지','도시 이름 · 대기질',a=>air(a)],
+['번역','문장 · 기본 번역 언어로 번역',(a,c)=>doTr(a,null,c)],
+['위키','검색어 · 위키백과 요약',async(a,c)=>a?(await wikiAns(a,c))||'문서를 찾지 못했어요.':'검색어를 함께 입력해 주세요.'],
+['사전','영어 단어 · 뜻과 예문',a=>dict(a)],
+['환율','예: 100달러',a=>currency('환율 '+a)],
+['공휴일','다가오는 공휴일',()=>holidays()],
+['차트','예: 사과 10, 배 20',a=>chartReq('차트 '+a)],
+['그래프','예: sin(x)',a=>chartReq((a||'x')+' 그래프')],
+['실행','자바스크립트 코드 실행',a=>runAns(a)],
+['코드','주제 · 코드 예제',(a,c)=>{const s=findSnip(Q(a));return s?snipAns(s,Q(a),c):'주제를 함께 입력해 주세요. 예: "/코드 피보나치"'}],
+['타이머','예: 3분',a=>timer(a+' 타이머')],
+['기억','기억할 내용 저장',a=>!a?'기억할 내용을 함께 입력해 주세요.':S.mem?(memAdd(a),`기억해 둘게요: "${a}"`):MEM_OFF],
+['메모리','기억 목록 열기',()=>{openMemory();return '메모리 창을 열었어요.'}],
+['설정','설정 열기',()=>{openSettings();return '설정 창을 열었어요.'}],
+['모드','일반 · 간결 · 상세 · 검색 · 번역 · 코딩',a=>{const k=Object.keys(MODES).find(x=>MODES[x]===a);if(!k)return '모드 이름을 함께 입력해 주세요: '+Object.values(MODES).join(', ');setMode(k);return `**${a}** 모드로 바꿨어요.`}],
+['테마','다크 · 라이트',a=>{S.theme=/라이트|light|밝/.test(a)?'light':'dark';applySet();return `${S.theme==='light'?'라이트':'다크'} 테마로 바꿨어요.`}],
+['도움말','기능 목록',()=>HELP]
+];
+
+async function respond(raw,ctx,rep){
+  raw=raw.trim(); const n=norm(raw), q=n.replace(/\s/g,'');
+  if(!q) return '내용을 입력해 주세요.';
+  if(CRISIS.test(n)) return CRISIS_A;
+  if(HARM.some(h=>h.test(q))) return pick('harm',HARM_A);
+  const clean=raw.replace(BAD,' ').replace(/\s+/g,' ').trim();
+  if(clean!==raw.replace(/\s+/g,' ')){
+    if(Q(clean).length<2) return pick('bad',BAD_A);
+    const r=obj(await respond(clean,ctx,rep)); r.t=pick('badp',BAD_P)+'\n\n'+r.t; return r;
+  }
+  let m,r;
+  if(raw[0]==='/'&&(m=raw.match(/^\/(\S+)\s*([\s\S]*)$/))){
+    const c=CMDS.find(x=>x[0]===m[1]);
+    return c?c[2](m[2].trim(),ctx):`"/${m[1]}" 명령은 없어요. "/"만 입력하면 목록이 나와요.`;
+  }
+  if((m=q.match(/(라이트|밝은|화이트|다크|어두운|블랙)(모드|테마)/))){ S.theme=/라이트|밝은|화이트/.test(m[1])?'light':'dark'; applySet(); return `${S.theme==='light'?'라이트':'다크'} 테마로 바꿨어요.`; }
+  if((m=q.match(/(일반|간결|상세|검색|번역|코딩)모드/))){ setMode(Object.keys(MODES).find(k=>MODES[k]===m[1])); return `**${m[1]}** 모드로 바꿨어요. ${MODE_D[S.mode]}.`; }
+  const lm=q.match(new RegExp('^('+LN+')로(는|도)?$'));
+  if(lm&&ctx.lastTr) return doTr(ctx.lastTr,LCODE[lm[1]],ctx);
+  if(S.mode==='trans') return doTr(raw,null,ctx);
+  if(ctx.quiz){
+    const z=ctx.quiz; ctx.quiz=null;
+    if(q.includes(z.a.toLowerCase())) return {t:`정답이에요! **${z.c}**의 수도는 **${z.cap}**입니다.`,s:['퀴즈 하나 더']};
+    if(/포기|모르|몰라|패스/.test(q)) return {t:`정답은 **${z.cap}**이었어요.`,s:['퀴즈 하나 더']};
+    return {t:`아쉬워요. 정답은 **${z.cap}**입니다.`,s:['퀴즈 하나 더']};
+  }
+  if((r=memory(raw,n,q,ctx))) return r;
+  if(!rep){
+    if(/^(다시|다른거|다른걸로|또|하나더|한번더|한판더)/.test(q)&&ctx.lastQ) return respond(ctx.lastQ,ctx,true);
+    if(q.length<=9&&/^(더알려|자세히|더설명|구체적|더자세|좀더|계속)/.test(q)){
+      if(ctx.lastWiki&&ctx.lastWiki.rest){ const w=ctx.lastWiki, ss=sentsOf(w.rest); w.rest=ss.slice(4).join('').trim(); return {t:`${ss.slice(0,4).join('').trim()}\n\n[위키백과에서 더 보기](${w.url})`,s:w.rest?['더 알려줘']:[]}; }
+      const c=CONCEPTS.find(x=>x.name===ctx.lastConcept);
+      return c?`조금 더 들어가 볼게요.\n\n${c.more}\n\n${pick('cl',CLOSE)}`:'어떤 주제를 더 알고 싶으신가요? 주제 이름을 말해 주세요.';
+    }
+    if((m=q.match(/^(파이썬|python|자바스크립트|javascript|js)(으로|로)?(는|도)?$/))&&ctx.lastSnip!=null) return snipAns(SNIP[ctx.lastSnip],'',ctx,/파이썬|python/.test(m[1])?'python':'javascript');
+    if((m=q.match(/^(막대|원|선)그래프로$/))&&ctx.lastQ&&/차트|그래프/.test(ctx.lastQ)) return chartReq(m[1]+'그래프 '+ctx.lastQ.replace(/막대\s*그래프|원\s*그래프|선\s*그래프|꺾은선|파이|차트|그래프/g,' '));
+    ctx.lastQ=raw;
+  }
+  if(S.mode==='search') return (await wikiAns(topic(n)||n,ctx))||`"${raw}"에 대한 문서를 찾지 못했어요. 검색어를 바꿔 보세요.`;
+  if(S.mode==='code'){ if(looksCode(raw)) return runAns(raw); const sn=findSnip(q); if(sn) return snipAns(sn,q,ctx); }
+  if((m=raw.match(/^(?:실행|run)\s*[:：]?\s*([\s\S]+)/i))) return runAns(m[1]);
+  if(/^(가위|바위|보)$/.test(q)) return rps(q);
+  if((r=dday(raw))) return r;
+  if((r=timer(raw))) return r;
+  if((r=units(raw))) return r;
+  if((r=dev(raw))) return r;
+  if((r=chartReq(raw))) return r;
+  if((r=tryMath(raw))) return r;
+  if(/미세먼지|공기질|대기질/.test(q)) return air(raw);
+  if(/날씨|기온|예보|우산|비와|비오|눈와|눈오|더워|추워/.test(q)) return weather(raw);
+  if(/환율|환전|달러|유로|엔화|위안|원화|몇원|파운드/.test(q)&&(r=await currency(raw))) return r;
+  if(/공휴일|쉬는날|빨간날|연휴/.test(q)) return holidays();
+  if(/시간|몇시|시각/.test(q)){ let b=''; for(const k in CITY) if(q.includes(k)&&k.length>b.length) b=k;
+    if(b) return `**${b}**의 현재 시각은 **${new Date().toLocaleString('ko-KR',{timeZone:CITY[b][2],month:'long',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'})}**이에요.`; }
+  const co=findCountry(q);
+  if(co&&/수도/.test(q)) return fill(pick('cp',CAP_A),co);
+  if(co&&/대륙|어디에있|어디있|위치/.test(q)) return `${josa(co.c,'은/는')} **${co.cont}**에 있는 나라예요. 수도는 ${co.cap}이고요.`;
+  if(/어느나라|어디수도|무슨나라/.test(q)){ const ci=COUNTRIES.find(x=>q.includes(x.key.toLowerCase())); if(ci) return `**${ci.cap}**${batchim(ci.key)?'은':'는'} **${ci.c}**의 수도예요.`; }
+  if((m=raw.match(new RegExp('^(.+?)\\s*(?:을|를)?\\s*('+LN+')로\\s*(번역|뭐|뭔|말하|어떻게|바꿔|하면|옮겨|써|알려|\\?|$)')))) return doTr(m[1].trim(),LCODE[m[2]],ctx);
+  if((m=raw.match(/^(.+?)\s*(?:을|를)?\s*번역\s*(해|좀|부탁|$)/))) return doTr(m[1],null,ctx);
+  if(/뜻|의미|meaning|정의|사전/.test(q)){
+    const ws=(n.match(/[a-z]{2,}/g)||[]).filter(x=>x!=='meaning');
+    if(ws.length===1&&!findConcept(n,q)) return dict(ws[0]);
+    if(ws.length>1) return doTr(raw.replace(/[가-힣?]+/g,' ').trim(),'ko',ctx);
+  }
+  const sn=findSnip(q);
+  if(sn&&/코드|예제|짜|작성|구현|문법|파이썬|python|자바스크립트|javascript|js|코딩|프로그램/.test(q)) return snipAns(sn,q,ctx);
+  const con=findConcept(n,q);
+  if(con&&CUE.test(q)) return conceptAnswer(con,q,ctx);
+  const it=matchIntent(q);
+  if(it){
+    const name=(S.mem&&MEM.name)||ctx.name, a=pick(it.key,it.a);
+    const t=(typeof a==='function'?a(q,ctx):a).replace(/\{님\}/g,name?' '+name+'님':'').replace(/\{님2\}/g,name?name+'님':'당신');
+    return {t,s:AGAIN.has(it.key)?['다른 거']:it.key==='rps'?['가위','바위','보']:[]};
+  }
+  if(con) return conceptAnswer(con,q,ctx);
+  if(S.web&&(CUE.test(q)||/누구|어디|언제|어떤|역사|유래|\?/.test(raw))){
+    const term=topic(n);
+    if(term.length>=2){ try{ const w=await wikiAns(term,ctx,true); if(w) return w; }catch(e){} }
+  }
+  const kw=n.split(' ').map(w=>w.replace(/(으로|에서|에게|이야|은|는|을|를|에|의|도|로|야|요)$/,'')).filter(w=>w.length>=2).sort((a,b)=>b.length-a.length)[0];
+  return {t:pick('fb',[
+    kw?`**${kw}**에 대해서는 답을 찾지 못했어요. 검색 모드로 바꾸거나 "/위키 ${kw}"로 찾아볼 수 있어요.`:'질문을 정확히 이해하지 못했어요. 조금 다르게 말씀해 주시겠어요?',
+    '그 질문은 제가 답하기 어려워요. 날씨, 번역, 계산, 차트, 코드 같은 건 자신 있어요.',
+    '그건 잘 모르겠어요. 틀린 답을 지어내기보다 모른다고 말씀드리는 게 낫다고 생각해요. 다른 표현으로 물어봐 주시겠어요?'
+  ]),s:['도움말']};
+}
+
+/* ===== 화면 ===== */
+const inp=$('#inp'), side=$('#side');
+const SUG={
+chat:['서울 날씨 어때?','블랙홀이 뭐야?','오늘 날씨가 좋네요 일본어로','차트 사과 12, 배 7, 귤 15','y = sin(x) 그래프','100달러 몇 원이야?','피보나치 파이썬 코드','다음 공휴일 언제야?','수도 퀴즈 내줘','내 이름은 민지야','크리스마스까지 며칠?','serendipity 뜻'],
+search:['세종대왕','양자역학','훈민정음','앨런 튜링','르네상스'],
+trans:['안녕하세요, 만나서 반갑습니다','Where is the nearest station?','오늘 저녁에 시간 있어요?','ありがとうございます'],
+code:['구구단','[3, 1, 2].sort()','소수 자바스크립트','for (let i = 1; i <= 5; i++) console.log(i * i)','json 정리: {"a":1,"b":[2,3]}','255를 2진수로']};
+function md(s){
+  return String(s).split('```').map((seg,i)=>{
+    if(i%2){
+      const nl=seg.indexOf('\n'), lang=nl<0?'':seg.slice(0,nl).trim(), code=(nl<0?seg:seg.slice(nl+1)).replace(/\n$/,'');
+      return `<div class="code"><div class="ch"><span>${esc(lang||'code')}</span><span>${/^(js|javascript)$/.test(lang)?'<button data-act="run">실행</button>':''}<button data-act="cpc">복사</button></span></div><pre>${esc(code)}</pre></div>`;
+    }
+    return inline(seg.replace(/^\n+|\n+$/g,''));
+  }).join('');
+}
+function inline(s){
+  if(!s) return '';
+  const f=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  let o='', tb=[];
+  const flush=()=>{ if(!tb.length) return; o+='<table>'+tb.map((r,i)=>'<tr>'+r.map(c=>i?`<td>${f(c)}</td>`:`<th>${f(c)}</th>`).join('')+'</tr>').join('')+'</table>'; tb=[]; };
+  for(const l of s.split('\n')){
+    const t=l.trim();
+    if(/^\|.*\|$/.test(t)){ if(!/^\|[\s:|-]+\|$/.test(t)) tb.push(t.slice(1,-1).split('|').map(c=>c.trim())); continue; }
+    flush();
+    if(/^### /.test(l)) o+=`<h4>${f(l.slice(4))}</h4>`;
+    else if(/^- /.test(l)) o+=`<div class="li">${f(l.slice(2))}</div>`;
+    else if(/^> /.test(l)) o+=`<blockquote>${f(l.slice(2))}</blockquote>`;
+    else o+=l?`<p>${f(l)}</p>`:'<div class="gap"></div>';
+  }
+  flush(); return o;
+}
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('on'),1800); }
+function copy(text,btn){
+  const ok=()=>{ if(btn){ const o=btn.textContent; btn.textContent='복사됨'; setTimeout(()=>btn.textContent=o,1200); } };
+  const fb=()=>{ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch(e){} ta.remove(); ok(); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok,fb); else fb();
+}
+function speak(t){ if(!window.speechSynthesis) return toast('이 브라우저는 읽어 주기를 지원하지 않아요'); speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/```[\s\S]*?```/g,' ').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1').replace(/[*`#>|]/g,' ')); u.lang='ko-KR'; speechSynthesis.speak(u); }
+function download(name,text,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type:type||'text/plain'})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function applySet(){
+  const th=S.theme==='system'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):S.theme;
+  document.documentElement.dataset.theme=th;
+  document.documentElement.style.setProperty('--acc',/^#[0-9a-f]{6}$/i.test(S.accent)?S.accent:'#10a37f');
+  document.documentElement.style.setProperty('--fs',(+S.font||15)+'px');
+  LS.set('nova_set',S);
+  if(!busy&&cur) renderMsgs(true);
+}
+function renderModes(){
+  $('#modes').innerHTML=Object.keys(MODES).map(k=>`<button data-m="${k}" class="${S.mode===k?'on':''}">${MODES[k]}</button>`).join('');
+  inp.placeholder={chat:'무엇이든 물어보세요',brief:'짧게 답해 드려요',deep:'자세히 답해 드려요',search:'검색어를 입력하세요',trans:'번역할 문장을 입력하세요',code:'코드나 주제를 입력하세요'}[S.mode]+'  ( / 로 명령 보기)';
+}
+function newChat(){
+  if(busy) stop();
+  if(!(cur&&!cur.msgs.length)){ cur={id:Date.now()+'',title:'새 채팅',msgs:[],ctx:{}}; chats.unshift(cur); }
+  renderList(); renderMsgs(); inp.focus();
+}
+function renderList(){
+  const f=$('#find').value.trim().toLowerCase(), L=$('#list'); L.innerHTML='';
+  chats.filter(c=>(c.msgs.length||c===cur)&&(!f||c.title.toLowerCase().includes(f)||c.msgs.some(m=>m.t.toLowerCase().includes(f)))).sort((a,b)=>(b.pin?1:0)-(a.pin?1:0)).forEach(c=>{
+    const d=document.createElement('div'); d.className='item'+(c===cur?' on':'');
+    d.innerHTML=`<span>${c.pin?'★ ':''}${esc(c.title)}</span><button data-a="pin" title="고정">${c.pin?'★':'☆'}</button><button data-a="ren" title="이름 변경">✎</button><button data-a="del" title="삭제">✕</button>`;
+    d.onclick=e=>{
+      const a=e.target.dataset.a;
+      if(a==='pin'){ c.pin=!c.pin; saveChats(); renderList(); }
+      else if(a==='ren'){ const t=prompt('대화 이름',c.title); if(t&&t.trim()){ c.title=t.trim().slice(0,40); saveChats(); renderList(); } }
+      else if(a==='del'){ if(busy&&c===cur) stop(); chats=chats.filter(x=>x!==c); saveChats(); if(cur===c){ cur=null; newChat(); } else renderList(); }
+      else{ if(busy) stop(); cur=c; renderList(); renderMsgs(); if(innerWidth<760) side.classList.add('hide'); }
+    };
+    L.appendChild(d);
+  });
+}
+function msgEl(m,i,last){
+  const d=document.createElement('div'); d.className='msg '+m.r; d.dataset.i=i;
+  if(m.r==='u') d.innerHTML=`<div class="ub"><div class="bub">${esc(m.t)}</div><div class="acts"><button data-act="cp">복사</button><button data-act="ed">수정</button></div></div>`;
+  else d.innerHTML=`<div class="av">${LOGO}</div><div class="body"><div class="txt">${md(m.t)}</div>${renderX(m.x)}<div class="acts"><button data-act="cp">복사</button><button data-act="tts">읽기</button><button data-act="up" class="${m.fb===1?'on':''}">좋아요</button><button data-act="dn" class="${m.fb===-1?'on':''}">별로예요</button>${last?'<button data-act="rg">다시 생성</button>':''}</div>${last&&S.chips&&m.s&&m.s.length?`<div class="chips">${m.s.map(c=>`<button data-act="chip">${esc(c)}</button>`).join('')}</div>`:''}</div>`;
+  return d;
+}
+function renderMsgs(keep){
+  const M=$('#msgs'); M.innerHTML='';
+  if(!cur.msgs.length){
+    const name=(S.mem&&MEM.name)||'', picks=[...(SUG[S.mode]||SUG.chat)].sort(()=>Math.random()-.5).slice(0,4);
+    M.innerHTML=`<div class="hero">${LOGO}<h1>${name?esc(name)+'님, ':''}무엇을 도와드릴까요?</h1><p>${MODE_D[S.mode]}</p><div class="sug">${picks.map(s=>`<button>${esc(s)}</button>`).join('')}</div></div>`;
+  } else cur.msgs.forEach((m,i)=>M.appendChild(msgEl(m,i,i===cur.msgs.length-1&&m.r==='b')));
+  if(!keep) toBottom();
+}
+function toBottom(){ const s=$('#scroll'); s.scrollTop=s.scrollHeight; }
+function setBusy(b){ busy=b; $('#send').textContent=b?'■':'↑'; $('#send').disabled=!b&&!inp.value.trim(); }
+function send(text){
+  text=(text||'').trim(); if(!text||busy) return;
+  if(!cur.msgs.length) cur.title=mask(text).slice(0,28);
+  const shown=mask(text), m={r:'u',t:shown}; if(shown!==text) m.o=text;
+  cur.msgs.push(m); saveChats(); renderList(); stick=true; renderMsgs();
+  inp.value=''; inp.style.height='auto'; $('#slash').style.display='none';
+  answer(text);
+}
+async function answer(text){
+  const chat=cur; activeChat=chat; setBusy(true);
+  const el=document.createElement('div'); el.className='msg b';
+  el.innerHTML=`<div class="av">${LOGO}</div><div class="body"><div class="txt"><span class="dots"><i></i><i></i><i></i></span></div></div>`;
+  $('#msgs').appendChild(el); toBottom();
+  const j=job={stop:false,done:false,timer:null,part:'',res:null,chat};
+  let r;
+  try{ const a=await Promise.all([respond(text,chat.ctx),new Promise(z=>setTimeout(z,300+rnd(500)))]); r=obj(a[0]); }
+  catch(e){ r={t:pick('err',ERR_A)}; }
+  if(j.stop) return;
+  if(!r) r={t:''};
+  r.t=mask(String(r.t||'').trim())||'답을 만들지 못했어요.'; j.res=r;
+  const full=r.t, box=el.querySelector('.txt'), sp=+S.speed;
+  if(!sp){ j.part=full; return finish(j); }
+  let i=0;
+  j.timer=setInterval(()=>{
+    i+=Math.ceil((1+rnd(3))*sp*(full.length>600?3:1)); j.part=full.slice(0,i);
+    box.innerHTML=md(j.part)+(i<full.length?'<span class="cur"></span>':'');
+    if(stick) toBottom();
+    if(i>=full.length) finish(j);
+  },18);
+}
+function finish(j){
+  if(!j||j.done) return; j.done=true; j.stop=true; clearInterval(j.timer);
+  const whole=j.res&&j.part===j.res.t, m={r:'b',t:j.part||'(응답이 중단되었습니다)'};
+  if(whole){ if(j.res.x) m.x=j.res.x; if(j.res.s&&j.res.s.length) m.s=j.res.s; }
+  j.chat.msgs.push(m); saveChats(); job=null; setBusy(false);
+  if(j.chat===cur) renderMsgs(!stick);
+  inp.focus();
+}
+function stop(){ if(job) finish(job); }
+function regen(){
+  if(busy) return;
+  const last=cur.msgs[cur.msgs.length-1]; if(!last||last.r!=='b') return;
+  cur.msgs.pop(); const u=[...cur.msgs].reverse().find(m=>m.r==='u'); if(!u){ renderMsgs(); return; }
+  stick=true; renderMsgs(); answer(u.o||u.t);
+}
+$('#msgs').onclick=async e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.closest('.sug')) return send(b.textContent);
+  const act=b.dataset.act; if(!act) return;
+  if(act==='run'){
+    const box=b.closest('.code'), code=box.querySelector('pre').textContent; let o=box.querySelector('.out');
+    if(!o){ o=document.createElement('div'); o.className='out'; box.appendChild(o); }
+    o.textContent='실행 중…'; o.textContent=outText(await runJS(code)); return;
+  }
+  if(act==='cpc') return copy(b.closest('.code').querySelector('pre').textContent,b);
+  if(act==='chip') return send(b.textContent);
+  const el=b.closest('.msg'), i=+el.dataset.i, m=cur.msgs[i]; if(!m) return;
+  if(act==='cp') copy(m.t,b);
+  else if(act==='tts') speak(m.t);
+  else if(act==='up'||act==='dn'){ const v=act==='up'?1:-1; m.fb=m.fb===v?0:v; saveChats(); renderMsgs(true); toast(m.fb?'의견을 기록했어요':'의견을 취소했어요'); }
+  else if(act==='rg') regen();
+  else if(act==='ed'){ if(busy) stop(); cur.msgs=cur.msgs.slice(0,i); saveChats(); renderMsgs(); inp.value=m.o||m.t; inp.dispatchEvent(new Event('input')); inp.focus(); }
+};
+function slashMenu(){
+  const v=inp.value, box=$('#slash');
+  if(v[0]!=='/'||/\s/.test(v)){ box.style.display='none'; return; }
+  const L=CMDS.filter(c=>c[0].startsWith(v.slice(1)));
+  if(!L.length){ box.style.display='none'; return; }
+  box.innerHTML=L.map(c=>`<button data-c="${c[0]}"><b>/${c[0]}</b><span>${esc(c[1])}</span></button>`).join('');
+  box.style.display='block';
+}
+$('#slash').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; inp.value='/'+b.dataset.c+' '; $('#slash').style.display='none'; inp.focus(); setBusy(busy); };
+inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=inp.scrollHeight+'px'; if(!busy) $('#send').disabled=!inp.value.trim(); slashMenu(); });
+inp.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.isComposing) return;
+  if(S.enter?!e.shiftKey:(e.ctrlKey||e.metaKey)){ e.preventDefault(); send(inp.value); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); $('#slash').style.display='none'; } });
+$('#send').onclick=()=>busy?stop():send(inp.value);
+$('#newBtn').onclick=newChat;
+$('#find').oninput=renderList;
+$('#menu').onclick=()=>side.classList.toggle('hide');
+$('#modes').onclick=e=>{ const m=e.target.dataset.m; if(m) setMode(m); };
+$('#themeBtn').onclick=()=>{ S.theme=document.documentElement.dataset.theme==='light'?'dark':'light'; applySet(); };
+$('#expBtn').onclick=()=>{
+  if(!cur.msgs.length) return toast('내보낼 대화가 없어요');
+  download((cur.title||'nova').replace(/[\\/:*?"<>|]/g,'_')+'.md','# '+cur.title+'\n\n'+cur.msgs.map(m=>(m.r==='u'?'**나**':'**Nova**')+'\n\n'+m.t).join('\n\n---\n\n'),'text/markdown');
+};
+$('#scroll').onscroll=()=>{ const s=$('#scroll'); stick=s.scrollHeight-s.scrollTop-s.clientHeight<60; $('#down').style.display=stick?'none':'block'; };
+$('#down').onclick=()=>{ stick=true; toBottom(); };
+let rec=null;
+$('#mic').onclick=()=>{
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return toast('이 브라우저는 음성 입력을 지원하지 않아요');
+  if(rec){ rec.stop(); return; }
+  rec=new SR(); rec.lang='ko-KR'; rec.interimResults=false;
+  rec.onresult=e=>{ inp.value=(inp.value+' '+e.results[0][0].transcript).trim(); inp.dispatchEvent(new Event('input')); };
+  rec.onerror=()=>toast('음성을 인식하지 못했어요');
+  rec.onend=()=>{ rec=null; $('#mic').classList.remove('on'); };
+  $('#mic').classList.add('on');
+  try{ rec.start(); }catch(e){ rec=null; $('#mic').classList.remove('on'); }
+};
+
+/* ===== 설정·메모리 창 ===== */
+function openModal(title,html){ $('#mTitle').textContent=title; $('#mBody').innerHTML=html; $('#modal').classList.add('on'); }
+function closeModal(){ $('#modal').classList.remove('on'); }
+$('#mClose').onclick=closeModal;
+$('#modal').onclick=e=>{ if(e.target.id==='modal') closeModal(); };
+const sel=(k,opts)=>`<select data-k="${k}">${opts.map(o=>`<option value="${o[0]}"${String(S[k])===String(o[0])?' selected':''}>${o[1]}</option>`).join('')}</select>`;
+const chk=k=>`<input type="checkbox" data-k="${k}"${S[k]?' checked':''}>`;
+const row=(label,ctl)=>`<div class="row"><span>${label}</span>${ctl}</div>`;
+function openSettings(){
+  openModal('설정',
+    row('테마',sel('theme',[['dark','다크'],['light','라이트'],['system','시스템 설정 따름']]))+
+    row('강조 색',`<span class="cols">${ACC.map(c=>`<button class="dot${S.accent===c?' on':''}" data-acc="${c}" style="background:${c}"></button>`).join('')}</span>`)+
+    row('글자 크기',sel('font',[['14','작게'],['15','보통'],['16','크게'],['18','아주 크게']]))+
+    row('답변 속도',sel('speed',[['0.5','느리게'],['1','보통'],['3','빠르게'],['0','즉시']]))+
+    row('기본 모드',sel('mode',Object.keys(MODES).map(k=>[k,MODES[k]])))+
+    row('기본 도시 (날씨)',`<input type="text" data-k="city" value="${esc(S.city)}">`)+
+    row('기본 번역 언어',sel('lang',Object.keys(LANGS).filter(k=>k!=='ko').map(k=>[k,LANGS[k]])))+
+    row('코드 예제 언어',sel('codeLang',[['python','Python'],['javascript','JavaScript']]))+
+    row('모르는 질문은 위키백과에서 찾기',chk('web'))+
+    row('메모리 사용',chk('mem'))+
+    row('욕설 가리기',chk('profanity'))+
+    row('추천 질문 표시',chk('chips'))+
+    row('Enter로 전송 (끄면 Ctrl+Enter)',chk('enter'))+
+    `<div class="row btns"><button data-do="exp">전체 대화 내보내기</button><button data-do="clr" class="danger">모든 대화 삭제</button><button data-do="rst" class="danger">설정 초기화</button></div>`);
+}
+function openMemory(){
+  openModal('메모리',
+    row('메모리 사용',chk('mem'))+
+    row('이름',`<input type="text" id="memName" value="${esc(MEM.name)}" placeholder="이름">`)+
+    `<div class="row"><input type="text" id="memNew" placeholder="기억할 내용 추가" style="flex:1;max-width:none"><button data-do="madd">추가</button></div>`+
+    (MEM.facts.length?MEM.facts.map(f=>`<div class="fact"><span>${esc(f.k?f.k+': '+f.v:f.v)}</span><button data-del="${esc(f.id)}">✕</button></div>`).join(''):'<div class="empty">아직 기억해 둔 내용이 없어요. 대화 중에 "기억해: ○○"라고 말하거나 위에서 직접 추가하세요.</div>')+
+    (MEM.facts.length||MEM.name?'<div class="row btns" style="margin-top:8px"><button data-do="mclr" class="danger">모두 지우기</button></div>':''));
+}
+$('#setBtn').onclick=openSettings;
+$('#memBtn').onclick=openMemory;
+function addMemFromInput(){ const v=$('#memNew').value.trim(); if(!v) return; memAdd(v,'',true); openMemory(); }
+$('#mBody').addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='memName'){ MEM.name=t.value.trim().slice(0,20); saveMem(); if(cur&&!cur.msgs.length) renderMsgs(); return; }
+  const k=t.dataset.k; if(!k) return;
+  S[k]=t.type==='checkbox'?t.checked:(k==='city'?(t.value.trim()||'서울'):t.value);
+  applySet(); if(k==='mode') setMode(S.mode);
+});
+$('#mBody').addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='memNew'&&!e.isComposing){ e.preventDefault(); addMemFromInput(); } });
+$('#mBody').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.acc){ S.accent=b.dataset.acc; applySet(); return openSettings(); }
+  if(b.dataset.del){ MEM.facts=MEM.facts.filter(f=>f.id!==b.dataset.del); saveMem(); return openMemory(); }
+  const d=b.dataset.do;
+  if(d==='madd') addMemFromInput();
+  else if(d==='mclr'){ if(confirm('기억해 둔 내용을 모두 지울까요?')){ MEM={name:'',facts:[]}; saveMem(); openMemory(); } }
+  else if(d==='exp') download('nova-chats.json',JSON.stringify(chats.filter(c=>c.msgs.length),null,2),'application/json');
+  else if(d==='clr'){ if(confirm('모든 대화를 삭제할까요?')){ if(busy) stop(); chats=[]; cur=null; saveChats(); newChat(); closeModal(); } }
+  else if(d==='rst'){ if(confirm('설정을 처음 상태로 되돌릴까요?')){ S=Object.assign({},DEF); applySet(); renderModes(); openSettings(); } }
+});
+
+/* ===== 시작 ===== */
+document.querySelector('.logo').innerHTML=LOGO;
+matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{ if(S.theme==='system') applySet(); });
+if(innerWidth<760) side.classList.add('hide');
+if(!MODES[S.mode]) S.mode='chat';
+applySet(); renderModes(); newChat();
+</script>
+</body>
+</html>
